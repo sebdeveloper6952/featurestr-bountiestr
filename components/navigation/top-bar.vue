@@ -45,6 +45,13 @@
           class="flex flex-col bg-gray-100 border rounded-md absolute top-10 right-2 z-50"
         >
           <div
+            @click="navTo('/profile')"
+            class="py-1 px-12 flex gap-2 hover:bg-gray-200 cursor-pointer"
+          >
+            <nuxt-icon filled name="profile" class="text-xl" />
+            <p>Profile</p>
+          </div>
+          <div
             @click="onLogout"
             class="py-1 px-12 flex gap-2 hover:bg-gray-200 cursor-pointer"
           >
@@ -104,5 +111,10 @@ const onLogin = async () => {
 const onLogout = () => {
   showDropdown.value = false;
   logout();
+};
+
+const navTo = (route: string) => {
+  showDropdown.value = false;
+  navigateTo(route);
 };
 </script>

@@ -3,6 +3,7 @@
     label
   }}</label>
   <textarea
+    :value="modelValue"
     @input="updateInputValue"
     id="message"
     rows="4"
@@ -13,6 +14,7 @@
 
 <script setup lang="ts">
 defineProps({
+  modelValue: { type: String, default: "" },
   label: {
     type: String,
     default: "",

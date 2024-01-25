@@ -3,6 +3,13 @@
     <outlined-button icon="cash_plus" class="absolute top-2 right-2"
       >Pledge</outlined-button
     >
+    <outlined-button
+      v-if="edit"
+      @click="navigateTo(`/feature/edit/${nevent}`)"
+      icon="edit"
+      class="absolute bottom-2 right-2"
+      >Edit</outlined-button
+    >
     <div
       class="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-gray-300"
     >
@@ -40,6 +47,7 @@ import outlinedButton from "~/components/buttons/outlined-button.vue";
 
 const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
+  edit: { type: Boolean, default: false },
 });
 
 const { title, hashtags, description } = useFeatureEvent(props.event);

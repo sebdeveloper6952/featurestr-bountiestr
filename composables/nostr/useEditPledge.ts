@@ -1,0 +1,25 @@
+import { NDKEvent } from "@nostr-dev-kit/ndk";
+import { useNdk } from "~/composables/nostr/ndk";
+
+export const useEditPledge = async (
+  title: string,
+  description: string,
+  additionalTags: string[],
+  dTag: string
+) => {
+  const { ndk } = useNdk();
+  if (ndk === null) return;
+
+  const e = new NDKEvent(ndk);
+  e.kind = 37300;
+  e.content = description;
+
+  const tags = [
+    ["d", dTag],
+    ["title", title],
+  ];
+  additionalTags.forEach((t) => tags.push(["t", t]));
+  e.tags = tags;
+
+  await e.publish();
+};
