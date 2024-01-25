@@ -71,6 +71,10 @@
           alt="img"
           class="w-full h-auto"
         />
+        <div class="flex gap-2 mt-2">
+          <outlined-button @click="openInvoiceInApp">Open App</outlined-button>
+          <outlined-button @click="payWithWebLN">WebLN</outlined-button>
+        </div>
       </div>
       <div class="flex w-full justify-between">
         <outlined-button
@@ -147,6 +151,18 @@ onMounted(() => {
 
 const lockToSelf = () => {
   if (ndk.activeUser?.pubkey) pubkeyToLockTo.value = ndk.activeUser.pubkey;
+};
+
+const openInvoiceInApp = () => {
+  if (payRequest.value)
+    window.open(`lightning://${payRequest.value}`, "_blank");
+};
+const payWithWebLN = async () => {
+  if (window.webln) {
+    if (!window.webln.enabled) await window.webln.enable();
+    await window.webln.sendPayment(payRequest.value);
+    nextStep();
+  }
 };
 
 const nextStep = async () => {
