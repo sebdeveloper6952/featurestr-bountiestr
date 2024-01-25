@@ -1,11 +1,8 @@
 <template>
   <div class="w-full rounded-xl bg-white p-6 text-center shadow-xl relative">
-    <button class="absolute top-1 right-1">
-      <div class="flex gap-1">
-        <p>Pledge</p>
-        <nuxt-icon filled name="feature_request" />
-      </div>
-    </button>
+    <outlined-button icon="cash_plus" class="absolute top-2 right-2"
+      >Pledge</outlined-button
+    >
     <div
       class="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-gray-300"
     >
@@ -39,6 +36,7 @@ import { PropType } from "vue";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
 import { useFeatureEvent } from "~/composables/nostr/useFeatureEvent";
+import outlinedButton from "~/components/buttons/outlined-button.vue";
 
 const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
