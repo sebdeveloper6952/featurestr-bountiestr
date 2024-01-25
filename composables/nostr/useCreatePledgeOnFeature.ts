@@ -6,25 +6,31 @@ export const useCreatePledgeOnFeature = async (
   content: string,
   cashuToken: string,
   amountSats: number,
+  trustee: string,
 ) => {
   const { ndk } = useNdk();
   if (ndk === null) return;
 
-  const e = new NDKEvent(ndk);
-  e.kind = 73002;
-  e.content = content;
+  const event = new NDKEvent(ndk);
+  event.kind = 73002;
+  event.content = content;
 
   const dTag = featureEvent.tags.find((t) => t[0] === "d")?.[1];
   if (!dTag) {
     throw new Error("d tag is required");
   }
 
-  e.tags = [
+  event.tags = [
     ["a", `${featureEvent.kind}:${featureEvent.author.pubkey}:${dTag}`],
-    ["p", featureEvent.id],
+    ["e", featureEvent.id],
+    ["p", featureEvent.author.pubkey],
     ["cashu", cashuToken],
     ["amount", amountSats.toString()],
   ];
 
-  await e.publish();
+  if (trustee !== ndk.activeUser?.pubkey) {
+    event.tags.push(["p", trustee, "", "trustee"]);
+  }
+
+  await event.publish();
 };
