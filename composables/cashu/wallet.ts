@@ -11,14 +11,15 @@ import {
   type ReceiveTokenEntryResponse,
   type AmountPreference,
   type TokenEntry,
-  CashuMint,
-  CashuWallet,
-  getEncodedToken,
-  getDecodedToken,
   type SendResponse,
   type PayLnInvoiceResponse,
   type SplitPayload,
   type BlindedTransaction,
+  type Token,
+  CashuMint,
+  CashuWallet,
+  getEncodedToken,
+  getDecodedToken,
 } from "@cashu/cashu-ts";
 import {
   deriveBlindingFactor,
@@ -379,12 +380,13 @@ class P2PKCashuWallet extends CashuWallet {
       this.p2pkReceiveSecretKey &&
       payload.proofs.some((p: Proof) => p.secret.startsWith("["))
     ) {
+      console.log("Signing for inputs");
       let signForOutputs = false;
       for (const proof of payload.proofs as Proof[]) {
         try {
           const parsed = JSON.parse(proof.secret) as [
             "P2Pk",
-            { data: string; nonce: string; tags: [string, string][] },
+            { data: string; nonce: string; tags?: [string, string][] },
           ];
 
           const pubkey = bytesToHex(
@@ -393,7 +395,9 @@ class P2PKCashuWallet extends CashuWallet {
           if (!parsed[1].data.endsWith(pubkey)) continue;
 
           if (
-            parsed[1].tags.some((t) => t[0] === "sigflag" && t[1] === "SIG_ALL")
+            parsed[1].tags?.some(
+              (t) => t[0] === "sigflag" && t[1] === "SIG_ALL",
+            )
           )
             signForOutputs = true;
 
@@ -406,10 +410,14 @@ class P2PKCashuWallet extends CashuWallet {
           proof.witness = JSON.stringify({
             signatures: [bytesToHex(signature)],
           });
-        } catch (e) {}
+        } catch (e) {
+          console.warn("Failed to sign for", proof);
+          console.log(e);
+        }
       }
 
       if (signForOutputs) {
+        console.log("Signing for outputs");
         for (const output of payload.outputs) {
           const signature = schnorr.sign(
             sha256(output.B_),
@@ -487,15 +495,6 @@ class P2PKCashuWallet extends CashuWallet {
   }
 }
 
-const wallet = new P2PKCashuWallet(new CashuMint("https://8333.space:3338"));
-
-//@ts-expect-error
-window.wallet = wallet;
-//@ts-expect-error
-window.getDecodedToken = getDecodedToken;
-//@ts-expect-error
-window.getEncodedToken = getEncodedToken;
-
 const mints = new Map<string, CashuMint>();
 
 export async function getMint(url: string) {
@@ -506,3 +505,53 @@ export async function getMint(url: string) {
   }
   return mints.get(formatted)!;
 }
+
+/** takes an array of tokens and filters out the invalid ones */
+export async function filterValidTokens(tokens: Token[]) {
+  const validTokens: Token[] = [];
+
+  const secretsByMint: Record<string, string[]> = {};
+  for (const token of tokens) {
+    for (const entry of token.token) {
+      const mint = await getMint(entry.mint);
+      const firstProof = entry.proofs[0];
+
+      secretsByMint[entry.mint] = secretsByMint[entry.mint] || [];
+      secretsByMint[entry.mint].push(firstProof.secret);
+    }
+  }
+
+  const validSecrets = new Set<string>();
+  for (const [mintURL, secrets] of Object.entries(secretsByMint)) {
+    const mint = await getMint(mintURL);
+    const { spendable } = await mint.check({
+      proofs: secrets.map((secret) => ({ secret })),
+    });
+    for (let i = 0; i < secrets.length; i++) {
+      if (spendable[i]) validSecrets.add(secrets[i]);
+    }
+  }
+
+  for (const token of tokens) {
+    for (const entry of token.token) {
+      const firstProof = entry.proofs[0];
+      if (validSecrets.has(firstProof.secret)) {
+        validTokens.push(token);
+        break;
+      }
+    }
+  }
+
+  return validTokens;
+}
+
+export const wallet = new P2PKCashuWallet(
+  new CashuMint("https://8333.space:3338"),
+);
+
+//@ts-expect-error
+window.wallet = wallet;
+//@ts-expect-error
+window.getDecodedToken = getDecodedToken;
+//@ts-expect-error
+window.getEncodedToken = getEncodedToken;

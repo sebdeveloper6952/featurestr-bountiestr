@@ -1,8 +1,5 @@
 <template>
   <div class="w-full rounded-xl bg-white p-6 text-center shadow-xl relative">
-    <outlined-button icon="cash_plus" class="absolute top-2 right-2"
-      >Pledge</outlined-button
-    >
     <outlined-button
       v-if="edit"
       @click="navigateTo(`/feature/edit/${nevent}`)"
@@ -35,27 +32,54 @@
         >#{{ hashtag }}</a
       >
     </div>
+    <div v-if="showPledgeUsers">
+      <pubkey-facepile :pubkeys="pledgeAuthors" summarized />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { type PropType } from "vue";
-import { NDKEvent } from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
+import { useNdk } from "~/composables/nostr/ndk";
 import { useFeatureEvent } from "~/composables/nostr/useFeatureEvent";
+import { PledgeKind } from "~/composables/nostr/kinds";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
+import {
+  getEventCoordinate,
+  sortEventsByDate,
+} from "~/composables/helpers/event";
+import { getUsersFromPledges } from "~/composables/helpers/pledge";
+import { useGetUnspentPledgesForFeature } from "~/composables/nostr/useGetUnspentPledgesForFeature";
+import pubkeyFacepile from "~/components/pubkey-facepile.vue";
 
 const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
   edit: { type: Boolean, default: false },
+  showPledgeUsers: { type: Boolean, default: true },
 });
 
+const { ndk } = useNdk();
 const { title, hashtags, description } = useFeatureEvent(props.event);
+
+const pledgeEvents = ref<NDKEvent[]>([]);
+const pledgeAuthors = ref<NDKUser[]>([]);
 
 const nevent = nip19.neventEncode({
   id: props.event.id,
   author: props.event.author.pubkey,
   kind: props.event.kind,
   relays: [props.event.relay?.url!],
+});
+const pledges = ref<NDKEvent[]>([]);
+
+onMounted(async () => {
+  const events = sortEventsByDate(
+    await useGetUnspentPledgesForFeature(props.event),
+  );
+
+  pledges.value = events;
+  pledgeAuthors.value = getUsersFromPledges(events);
 });
 </script>

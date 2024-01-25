@@ -1,5 +1,6 @@
 import NDK, { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
 import { useStorage } from "@vueuse/core";
+import { wallet } from "../cashu/wallet";
 
 let ndk = new NDK({
   explicitRelayUrls: ["wss://nostrue.com"],
@@ -10,13 +11,17 @@ export const useNdk = () => {
   const setSk = async (sk: string) => {
     if (ndk !== null && sk !== "") {
       ndk.signer = new NDKPrivateKeySigner(sk);
-      await ndk.signer.blockUntilReady();
+      const user = await ndk.signer.blockUntilReady();
+      user.ndk = ndk;
+      await user.fetchProfile();
+      ndk.activeUser = user;
+      activeUser.value = ndk.activeUser;
 
       const nsec = useStorage("nsec", "");
       nsec.value = sk;
 
-      await ndk.activeUser?.fetchProfile();
-      activeUser.value = ndk.activeUser;
+      // set wallet unlock key
+      wallet.p2pkReceiveSecretKey = sk;
     }
   };
 
