@@ -9,7 +9,7 @@
         label="Enter your description:"
         class="mt-4"
       />
-      <p class="mt-4">Additional tags</p>
+      <p class="mt-4 text-sm">Additional tags:</p>
       <div class="flex items-center gap-1">
         <text-input v-model="tag" autocomplete="off" />
         <outlined-button @click="addTag">Add</outlined-button>

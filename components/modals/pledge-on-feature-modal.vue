@@ -30,7 +30,7 @@
             Yourself
           </button>
           <button
-            @click="lockToYourself = false"
+            @click="pubkeyToLockTo = ''"
             :class="{ '!bg-black text-gray-50': !lockToYourself }"
             class="w-fit px-2 py-1 text-center border border-black rounded text-sm hover:bg-gray-200"
           >
@@ -41,28 +41,7 @@
           v-if="!lockToYourself"
           class="mt-2 w-full bg-gray-100 border border-gray-100 rounded relative"
         >
-          <nuxt-icon
-            filled
-            name="arrow_down"
-            class="text-xl absolute top-0 right-1"
-          />
-          <ul>
-            <li v-for="u in pkOptions" :value="u?.pubkey">
-              <div v-if="u?.profile" class="flex gap-1">
-                <img
-                  :src="
-                    u.profile.image || 'https://robohash.org/' + u.profile.npub
-                  "
-                  alt="img"
-                  class="w-6 h-6 p-px ring ring-slate-300 rounded-full"
-                />
-                <p>{{ u.profile.name }}</p>
-              </div>
-              <div v-else>
-                {{ u?.pubkey.substring(0, 24) }}
-              </div>
-            </li>
-          </ul>
+          <pubkey-select v-model="pubkeyToLockTo" :pubkeys="pkOptions" />
         </div>
       </div>
       <div v-if="pledgeStep === 2">
@@ -96,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { NDKEvent } from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
 import { useNdk } from "~/composables/nostr/ndk";
 import {
   isHexKey,
@@ -110,6 +89,8 @@ import numericInput from "~/components/forms/numeric-input.vue";
 import { wallet } from "~/composables/cashu/wallet";
 import { type Token, getEncodedToken } from "@cashu/cashu-ts";
 import { useCreatePledgeOnFeature } from "~/composables/nostr/useCreatePledgeOnFeature";
+import pubkeySelect from "~/components/forms/pubkey-select.vue";
+import { useGetPledgesForFeature } from "~/composables/nostr/useGetPledgesForFeature";
 
 const props = defineProps({
   show: {
@@ -141,12 +122,17 @@ const lockToYourself = computed(
 );
 const invoiceHash = ref("");
 const payRequest = ref("");
-const pkOptions = ref([ndk.activeUser]);
+const pkOptions = ref<NDKUser[]>([]);
 
-onMounted(() => {
-  ndk.fetchEvent(hexId).then((e) => {
-    if (e) event.value = e;
-  });
+onMounted(async () => {
+  const e = await ndk.fetchEvent(hexId);
+  if (!e) {
+    throw new Error("could not find feature event");
+  }
+
+  event.value = e;
+  const pledges = await useGetPledgesForFeature(event.value);
+  pkOptions.value = Array.from(pledges).map((p) => p.author);
 });
 
 const lockToSelf = () => {

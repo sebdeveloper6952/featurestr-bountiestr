@@ -7,7 +7,7 @@
       @click="navigateTo('/')"
     >
       <nuxt-icon filled name="cashu" class="text-4xl" />
-      <p class="text-xl font-bold">Cashu</p>
+      <p class="text-xl font-bold">Cashu Thing</p>
     </div>
     <div class="flex items-center relative">
       <outlined-button

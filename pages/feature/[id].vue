@@ -19,6 +19,14 @@
       </div>
       <pledge-card v-for="pledge in sortedPledges" :event="pledge" />
     </div>
+    <div class="flex gap-2 w-full justify-start">
+      <outlined-button
+        @click="navigateTo('/feature/solution/' + id)"
+        icon="cash_plus"
+        class=""
+        >Post Solution</outlined-button
+      >
+    </div>
     <div class="mt-4">
       <h4 class="font-bold">Comments</h4>
     </div>
