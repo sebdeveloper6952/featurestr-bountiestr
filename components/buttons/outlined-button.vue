@@ -4,7 +4,7 @@
   >
     <div class="flex items-center gap-1">
       <slot />
-      <nuxt-icon filled :name="icon" class="text-xl" />
+      <nuxt-icon v-if="icon !== ''" filled :name="icon" class="text-xl" />
     </div>
   </button>
 </template>

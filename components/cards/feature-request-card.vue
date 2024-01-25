@@ -16,7 +16,7 @@
       />
     </div>
     <h1 class="text-darken mb-3 text-xl font-medium lg:px-14">
-      <a :href="`/feature/${nevent}`">{{ title }}</a>
+      <button @click="navigateTo(`/feature/${nevent}`)">{{ title }}</button>
     </h1>
     <p class="px-4 text-gray-500">
       {{ event.content }}
@@ -43,4 +43,11 @@ const props = defineProps({
 });
 
 const { title, hashtags, description } = useFeatureEvent(props.event);
+
+const nevent = nip19.neventEncode({
+  id: props.event.id,
+  author: props.event.author.pubkey,
+  kind: props.event.kind,
+  relays: [props.event.relay?.url!],
+});
 </script>
