@@ -1,10 +1,5 @@
 <template>
   <div class="w-full flex p-4 flex-col justify-center">
-    <div class="flex gap-2 w-full justify-end">
-      <outlined-button @click="showPledgeModal = true" icon="cash_plus" class=""
-        >Pledge</outlined-button
-      >
-    </div>
     <div class="mt-4 w-full flex flex-col items-center gap-2">
       <feature-request-card
         v-if="event"
@@ -13,7 +8,15 @@
       />
     </div>
     <div class="mt-4">
-      <h4 class="font-bold">Pledges</h4>
+      <div class="flex gap-2 w-full justify-between">
+        <h4 class="font-bold">Pledges</h4>
+        <outlined-button
+          @click="showPledgeModal = true"
+          icon="cash_plus"
+          class=""
+          >Pledge</outlined-button
+        >
+      </div>
       <pledge-card v-for="pledge in pledges" :event="pledge" />
     </div>
     <div class="mt-4">
@@ -29,22 +32,22 @@
 
 <script setup lang="ts">
 import FeatureRequestCard from "~/components/cards/feature-request-card.vue";
-import { NDKEvent } from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKSubscription } from "@nostr-dev-kit/ndk";
 import { useNdk } from "~/composables/nostr/ndk";
-import { FeatureRequestKind } from "~/composables/nostr/kinds";
 import {
   isHexKey,
   safeDecode,
   getEventIdFromDecodeResult,
 } from "~/composables/helpers/nip19";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
-import { wallet } from "~/composables/cashu/wallet";
-import { Token, getEncodedToken } from "@cashu/cashu-ts";
-import { useCreatePledgeOnFeature } from "~/composables/nostr/useCreatePledgeOnFeature";
 import pledgeOnFeatureModal from "~/components/modals/pledge-on-feature-modal.vue";
-import { useGetUnspentPledgesForFeature } from "~/composables/nostr/useGetUnspentPledgesForFeature";
-import { sortEventsByDate } from "~/composables/helpers/event";
+import { useFilterUnspentPledges } from "~/composables/nostr/useFilterUnspentPledges";
+import {
+  getEventCoordinate,
+  sortEventsByDate,
+} from "~/composables/helpers/event";
 import pledgeCard from "~/components/cards/pledge-card.vue";
+import { PledgeKind } from "../../composables/nostr/kinds";
 
 const r = useRoute();
 const { ndk } = useNdk();
@@ -57,12 +60,26 @@ const pledges = ref<NDKEvent[]>([]);
 
 const showPledgeModal = ref(false);
 
+let pledgesSub: NDKSubscription;
 onMounted(async () => {
   event.value = (await ndk.fetchEvent(hexId)) ?? undefined;
   if (event.value) {
-    pledges.value = sortEventsByDate(
-      await useGetUnspentPledgesForFeature(event.value),
+    pledgesSub = ndk.subscribe(
+      [{ kinds: [PledgeKind], "#a": [getEventCoordinate(event.value)] }],
+      { closeOnEose: false },
     );
+    pledgesSub.on("event", (event) => {
+      pledges.value = sortEventsByDate([event, ...pledges.value]);
+    });
+    pledgesSub.on("eose", async () => {
+      pledges.value = await useFilterUnspentPledges(
+        pledges.value as NDKEvent[],
+      );
+    });
+    pledgesSub.start();
   }
+});
+onUnmounted(() => {
+  if (pledgesSub) pledgesSub.stop();
 });
 </script>

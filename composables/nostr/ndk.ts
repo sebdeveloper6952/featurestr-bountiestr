@@ -1,8 +1,11 @@
 import NDK, { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
+import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
 import { useStorage } from "@vueuse/core";
 import { wallet } from "../cashu/wallet";
 
+const dexieAdapter = new NDKCacheAdapterDexie({ dbName: "ndk-cache" });
 let ndk = new NDK({
+  cacheAdapter: dexieAdapter,
   explicitRelayUrls: ["wss://nostrue.com"],
 });
 const activeUser = ref<NDKUser | undefined>();

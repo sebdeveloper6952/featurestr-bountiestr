@@ -1,8 +1,7 @@
 <template>
-  <img
-    class="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-gray-800"
-    :src="profile?.image || 'https://robohash.org/' + user.pubkey"
-  />
+  <span class="font-bold">{{
+    profile?.displayName || profile?.name || "anon"
+  }}</span>
 </template>
 
 <script setup lang="ts">

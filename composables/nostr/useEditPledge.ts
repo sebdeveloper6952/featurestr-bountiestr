@@ -5,7 +5,7 @@ export const useEditPledge = async (
   title: string,
   description: string,
   additionalTags: string[],
-  dTag: string
+  dTag: string,
 ) => {
   const { ndk } = useNdk();
   if (ndk === null) return;

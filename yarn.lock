@@ -639,7 +639,18 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@nostr-dev-kit/ndk@^2.0.6":
+"@nostr-dev-kit/ndk-cache-dexie@^2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@nostr-dev-kit/ndk-cache-dexie/-/ndk-cache-dexie-2.2.4.tgz#802b824b4822d0c1e5d1f021b3b89f29a857c561"
+  integrity sha512-HPdA+YnGrbNuXuqvGf1KpRoDo2avaqvJLlRE1iH8W8Yp45T8efJV9/UmT/OU7YgIoeL6k0y5F1zOCLu4P3pJSg==
+  dependencies:
+    "@nostr-dev-kit/ndk" "2.3.3"
+    debug "^4.3.4"
+    dexie "^3.2.4"
+    nostr-tools "^1.14.0"
+    typescript-lru-cache "^2.0.0"
+
+"@nostr-dev-kit/ndk@2.3.3", "@nostr-dev-kit/ndk@^2.0.6":
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/@nostr-dev-kit/ndk/-/ndk-2.3.3.tgz#22cbc8c973a0f0392ed99e7d5ddbd52cd6551db1"
   integrity sha512-R2r6U1Xt4B7yygQFgTEexNqhuQQrbJ0Kxh4GvcCgNgSjMI+cPJQPWg4g4noWGRnaWf4epqLNCblfo5UfMuijTw==
@@ -2231,6 +2242,11 @@ data-uri-to-buffer@^4.0.0:
   resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-4.0.1.tgz#d8feb2b2881e6a4f58c2e08acfd0e2834e26222e"
   integrity sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==
 
+dayjs@^1.11.10:
+  version "1.11.10"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.10.tgz#68acea85317a6e164457d6d6947564029a6a16a0"
+  integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==
+
 debug@2.6.9, debug@^2.2.0:
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
@@ -2317,6 +2333,11 @@ devalue@^4.3.2:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/devalue/-/devalue-4.3.2.tgz#cc44e4cf3872ac5a78229fbce3b77e57032727b5"
   integrity sha512-KqFl6pOgOW+Y6wJgu80rHpo2/3H07vr8ntR9rkkFIRETewbf5GaYYcakYfiKz89K+sLsuPkQIZaXDMjUObZwWg==
+
+dexie@^3.2.4:
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/dexie/-/dexie-3.2.4.tgz#b22a9729be1102acb2eee16102ea6e2bc76454cf"
+  integrity sha512-VKoTQRSv7+RnffpOJ3Dh6ozknBqzWw/F3iqMdsZg958R0AS8AnY9x9d1lbwENr0gzeGJHXKcGhAMRaqys6SxqA==
 
 didyoumean@^1.2.2:
   version "1.2.2"
@@ -3856,7 +3877,7 @@ normalize-range@^0.1.2:
   resolved "https://registry.yarnpkg.com/normalize-range/-/normalize-range-0.1.2.tgz#2d10c06bdfd312ea9777695a4d28439456b75942"
   integrity sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==
 
-nostr-tools@^1.15.0:
+nostr-tools@^1.14.0, nostr-tools@^1.15.0:
   version "1.17.0"
   resolved "https://registry.yarnpkg.com/nostr-tools/-/nostr-tools-1.17.0.tgz#b6f62e32fedfd9e68ec0a7ce57f74c44fc768e8c"
   integrity sha512-LZmR8GEWKZeElbFV5Xte75dOeE9EFUW/QLI1Ncn3JKn0kFddDKEfBbFN8Mu4TMs+L4HR/WTPha2l+PPuRnJcMw==
@@ -5016,6 +5037,7 @@ streamx@^2.15.0:
     queue-tick "^1.0.1"
 
 "string-width-cjs@npm:string-width@^4.2.0", "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -5048,6 +5070,7 @@ string_decoder@~1.1.1:
     safe-buffer "~5.1.0"
 
 "strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+  name strip-ansi-cjs
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -5775,6 +5798,7 @@ wide-align@^1.1.2:
     string-width "^1.0.2 || 2 || 3 || 4"
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+  name wrap-ansi-cjs
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==

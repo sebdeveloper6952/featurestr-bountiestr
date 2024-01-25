@@ -8,16 +8,9 @@
       >Edit</outlined-button
     >
     <div
-      class="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-gray-300"
+      class="mx-auto flex h-16 w-16 -translate-y-10 transform items-center justify-center rounded-full bg-gray-300"
     >
-      <img
-        :src="
-          event.author.profile?.image ||
-          'https://robohash.org/' + event.author?.npub
-        "
-        alt="img"
-        class="w-10 h-10 p-px ring ring-slate-300 rounded-full"
-      />
+      <user-image :user="event.author" />
     </div>
     <h1 class="text-darken mb-3 text-xl font-medium lg:px-14">
       <button @click="navigateTo(`/feature/${nevent}`)">{{ title }}</button>
@@ -36,6 +29,8 @@
       <pubkey-facepile :pubkeys="pledgeAuthors" summarized />
     </div>
   </div>
+
+  <debug-modal :event="event" :show="debug" @close="debug = false" />
 </template>
 
 <script setup lang="ts">
@@ -44,15 +39,13 @@ import { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
 import { useNdk } from "~/composables/nostr/ndk";
 import { useFeatureEvent } from "~/composables/nostr/useFeatureEvent";
-import { PledgeKind } from "~/composables/nostr/kinds";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
-import {
-  getEventCoordinate,
-  sortEventsByDate,
-} from "~/composables/helpers/event";
+import { sortEventsByDate } from "~/composables/helpers/event";
 import { getUsersFromPledges } from "~/composables/helpers/pledge";
 import { useGetUnspentPledgesForFeature } from "~/composables/nostr/useGetUnspentPledgesForFeature";
 import pubkeyFacepile from "~/components/pubkey-facepile.vue";
+import userImage from "~/components/user-image.vue";
+import debugModal from "~/components/modals/debug-modal.vue";
 
 const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
@@ -60,6 +53,7 @@ const props = defineProps({
   showPledgeUsers: { type: Boolean, default: true },
 });
 
+const debug = ref(false);
 const { ndk } = useNdk();
 const { title, hashtags, description } = useFeatureEvent(props.event);
 

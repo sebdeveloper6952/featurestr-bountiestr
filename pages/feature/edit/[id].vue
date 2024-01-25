@@ -64,7 +64,7 @@ onMounted(() => {
     if (e) {
       event.value = e;
       const { title, hashtags, description, dTag } = useFeatureEvent(
-        event.value
+        event.value,
       );
       newTitle.value = title ?? "";
       newDescription.value = description ?? "";
@@ -89,7 +89,7 @@ const onSubmit = async () => {
     newTitle.value,
     newDescription.value,
     additionalTags.value,
-    dTagRef.value
+    dTagRef.value,
   );
   navigateTo("/profile");
 };

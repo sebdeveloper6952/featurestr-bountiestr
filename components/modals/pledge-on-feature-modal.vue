@@ -72,7 +72,7 @@
       </div>
       <div class="flex w-full justify-between">
         <outlined-button
-          v-if="pledgeStep !== 0"
+          v-if="pledgeStep !== 0 && pledgeStep !== pledgeSteps.length - 1"
           @click="previousStep"
           class="mt-4"
           >Previous</outlined-button
@@ -101,7 +101,7 @@ import outlinedButton from "~/components/buttons/outlined-button.vue";
 import baseModal from "~/components/modals/base-modal.vue";
 import numericInput from "~/components/forms/numeric-input.vue";
 import { wallet } from "~/composables/cashu/wallet";
-import { Token, getEncodedToken } from "@cashu/cashu-ts";
+import { type Token, getEncodedToken } from "@cashu/cashu-ts";
 import { useCreatePledgeOnFeature } from "~/composables/nostr/useCreatePledgeOnFeature";
 
 const props = defineProps({
@@ -127,8 +127,10 @@ const amounts = [1, 21, 2100, 21000];
 const pledgeAmount = ref(1);
 const pledgeSteps = ["amount", "lock", "pay", "success"];
 const pledgeStep = ref(0);
-const lockToYourself = ref(true);
-const pubkeyToLockTo = ref(ndk.activeUser?.pubkey);
+const pubkeyToLockTo = ref<string>("");
+const lockToYourself = computed(
+  () => pubkeyToLockTo.value === ndk.activeUser?.pubkey,
+);
 const invoiceHash = ref("");
 const payRequest = ref("");
 const pkOptions = ref([ndk.activeUser]);
@@ -140,8 +142,7 @@ onMounted(() => {
 });
 
 const lockToSelf = () => {
-  lockToYourself.value = true;
-  pubkeyToLockTo.value = ndk.activeUser?.pubkey;
+  if (ndk.activeUser?.pubkey) pubkeyToLockTo.value = ndk.activeUser.pubkey;
 };
 
 const nextStep = async () => {
@@ -149,8 +150,11 @@ const nextStep = async () => {
     return;
   }
 
+  if (pledgeStep.value === 0) {
+    lockToSelf();
+  }
+
   if (pledgeStep.value === 1) {
-    console.log("locked p2pk: ", pubkeyToLockTo.value);
     const { pr, hash } = await wallet.requestMint(pledgeAmount.value);
     payRequest.value = pr;
     invoiceHash.value = hash;
@@ -158,7 +162,7 @@ const nextStep = async () => {
 
   if (pledgeStep.value === 2) {
     try {
-      if (!pubkeyToLockTo.value) throw new Error("invalid p2pk");
+      if (!pubkeyToLockTo.value) throw new Error("missing p2pk pubkey");
       wallet.p2pkSendLockPubkey = "02" + pubkeyToLockTo.value;
       const { proofs } = await wallet.requestTokens(
         pledgeAmount.value,

@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import userImage from "./user-image.vue";
-import { NDKUser } from "@nostr-dev-kit/ndk";
+import { type NDKUser } from "@nostr-dev-kit/ndk";
 
 const props = defineProps({
   pubkeys: {

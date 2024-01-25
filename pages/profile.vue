@@ -25,8 +25,8 @@ onMounted(() => {
     .then(
       (set) =>
         (events.value = Array.from(set).sort(
-          (a, b) => b.created_at! - a.created_at!
-        ))
+          (a, b) => b.created_at! - a.created_at!,
+        )),
     );
 });
 </script>

@@ -1,25 +1,40 @@
 <template>
-  <div class="w-full rounded-xl bg-white p-6">
-    <!-- <outlined-button class="absolute bottom-2 right-2">Edit</outlined-button> -->
-    <div
-      class="flex h-16 w-16 items-center justify-center rounded-full bg-gray-300"
-    >
-      <user-image :user="event.author" />
+  <div class="w-full rounded-xl bg-white px-2 py-2">
+    <div class="flex gap-2 w-full">
+      <div
+        class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-300"
+      >
+        <user-image :user="event.author" />
+      </div>
+      <div>
+        <p>
+          <user-name :user="event.author" />
+          {{ dayjs.unix(event.created_at!).format("lll") }}
+        </p>
+        <p class="text-gray-500">{{ total }} sats</p>
+      </div>
+      <div class="ml-auto">
+        <icon-button @click="debug = true" icon="code" />
+      </div>
     </div>
-    <p class="px-4 text-gray-500">
+    <p>
       {{ event.content }}
     </p>
-    <p>{{ total }} sats</p>
+
+    <debug-modal :event="event" :show="debug" @close="debug = false" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { type PropType } from "vue";
 import { type Token } from "@cashu/cashu-ts";
-import { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
+import { NDKEvent } from "@nostr-dev-kit/ndk";
+import dayjs from "dayjs";
 import { useNdk } from "~/composables/nostr/ndk";
-import outlinedButton from "~/components/buttons/outlined-button.vue";
-import userImage from "../user-image.vue";
+import debugModal from "~/components/modals/debug-modal.vue";
+import iconButton from "~/components/buttons/icon-button.vue";
+import userImage from "~/components/user-image.vue";
+import userName from "~/components/user-name.vue";
 import { getTokenFromPeldge } from "~/composables/helpers/pledge";
 import { getTokenTotal } from "~/composables/helpers/cashu";
 
@@ -27,6 +42,7 @@ const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
 });
 
+const debug = ref(false);
 const { ndk } = useNdk();
 const token = ref<Token>();
 const total = ref(0);
