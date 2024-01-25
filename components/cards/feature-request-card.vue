@@ -1,0 +1,48 @@
+<template>
+  <div class="w-full rounded-xl bg-white p-6 text-center shadow-xl relative">
+    <button class="absolute top-1 right-1">
+      <div class="flex gap-1">
+        <p>Pledge</p>
+        <nuxt-icon filled name="feature_request" />
+      </div>
+    </button>
+    <div
+      class="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-gray-300"
+    >
+      <img
+        :src="
+          event.author.profile?.image ||
+          'https://robohash.org/' + event.author?.npub
+        "
+        alt="img"
+        class="w-10 h-10 p-px ring ring-slate-300 rounded-full"
+      />
+    </div>
+    <h1 class="text-darken mb-3 text-xl font-medium lg:px-14">
+      <a :href="`/feature/${nevent}`">{{ title }}</a>
+    </h1>
+    <p class="px-4 text-gray-500">
+      {{ event.content }}
+    </p>
+    <div class="w-full flex justify-center flex-wrap gap-2">
+      <a
+        v-for="hashtag in hashtags"
+        class="w-fit mt-2 px-2 py-1 flex text-sm bg-blue-300/50 text-blue-500 font-bold rounded"
+        >#{{ hashtag }}</a
+      >
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { PropType } from "vue";
+import { NDKEvent } from "@nostr-dev-kit/ndk";
+import { nip19 } from "nostr-tools";
+import { useFeatureEvent } from "~/composables/nostr/useFeatureEvent";
+
+const props = defineProps({
+  event: { type: Object as PropType<NDKEvent>, default: null },
+});
+
+const { title, hashtags, description } = useFeatureEvent(props.event);
+</script>
