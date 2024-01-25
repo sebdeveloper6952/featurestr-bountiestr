@@ -13,7 +13,12 @@
         </p>
         <p class="text-gray-500">{{ total }} sats</p>
       </div>
-      <div class="ml-auto">
+      <div class="ml-auto flex gap-2">
+        <outlined-button
+          @click="withdrawalModal = true"
+          v-if="event.author.pubkey === ndk.activeUser?.pubkey"
+          >Withdraw</outlined-button
+        >
         <icon-button @click="debug = true" icon="code" />
       </div>
     </div>
@@ -21,6 +26,11 @@
       {{ event.content }}
     </p>
 
+    <withdrawal-pledge-modal
+      :event="event"
+      :show="withdrawalModal"
+      @close="withdrawalModal = false"
+    />
     <debug-modal :event="event" :show="debug" @close="debug = false" />
   </div>
 </template>
@@ -33,8 +43,10 @@ import dayjs from "dayjs";
 import { useNdk } from "~/composables/nostr/ndk";
 import debugModal from "~/components/modals/debug-modal.vue";
 import iconButton from "~/components/buttons/icon-button.vue";
+import outlinedButton from "../buttons/outlined-button.vue";
 import userImage from "~/components/user-image.vue";
 import userName from "~/components/user-name.vue";
+import withdrawalPledgeModal from "../modals/withdrawal-pledge-modal.vue";
 import { getTokenFromPeldge } from "~/composables/helpers/pledge";
 import { getTokenTotal } from "~/composables/helpers/cashu";
 
@@ -43,6 +55,7 @@ const props = defineProps({
 });
 
 const debug = ref(false);
+const withdrawalModal = ref(false);
 const { ndk } = useNdk();
 const token = ref<Token>();
 const total = ref(0);
