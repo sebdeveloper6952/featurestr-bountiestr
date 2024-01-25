@@ -17,7 +17,14 @@ First test user: nsec1l9mn8473mrzxe5dp2az7wvfjg7090as9s8wya9aulhdly40znw3s94x2dv
     - `kind`: 73001
     - `content`: human readable message describing how the author as forfilled the feature request
     - `a` tag referncing k:37300
-    - `p` tag of `thing.pubkey`\
+    - `p` tag of `thing.pubkey`
+  - pledge for feature request
+    - `kind`: 73002
+    - `content`: human readable message describing the unlock conditions
+    - `a` tag referncing k:37300
+    - `p` tag of `thing.pubkey`
+    - `cashu` tag containing token
+    - `amount` tag containing amount (in sats)
   - comment on feature request
     - `kind`: 73003
     - `content`: message
