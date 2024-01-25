@@ -1,11 +1,11 @@
 <template>
   <span class="font-bold">{{
-    profile?.displayName || profile?.name || "anon"
+    user.profile?.displayName || user.profile?.name || "anon"
   }}</span>
 </template>
 
 <script setup lang="ts">
-import { type NDKUser, type NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { type NDKUser } from "@nostr-dev-kit/ndk";
 
 const props = defineProps({
   user: {
@@ -14,9 +14,7 @@ const props = defineProps({
   },
 });
 
-const profile = ref<NDKUserProfile>();
-
 onMounted(async () => {
-  profile.value = (await props.user.fetchProfile()) ?? undefined;
+  if (!props.user.profile) await props.user.fetchProfile();
 });
 </script>
