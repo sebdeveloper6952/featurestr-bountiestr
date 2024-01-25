@@ -1,4 +1,4 @@
-import { NDKEvent, NDKTag } from "@nostr-dev-kit/ndk";
+import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { useNdk } from "~/composables/nostr/ndk";
 
 export const useCreatePledge = async (

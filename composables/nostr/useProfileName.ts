@@ -1,4 +1,4 @@
-import { NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { type NDKUserProfile } from "@nostr-dev-kit/ndk";
 
 export const useGetProfileName = (
   profile: NDKUserProfile | undefined | null,

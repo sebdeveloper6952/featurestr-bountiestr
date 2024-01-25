@@ -1,6 +1,5 @@
 import { ref } from "vue";
-import { useNdk } from "./ndk";
-import { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { NDKUser, type NDKUserProfile } from "@nostr-dev-kit/ndk";
 
 const profiles = ref(new Map<string, NDKUserProfile | null>());
 

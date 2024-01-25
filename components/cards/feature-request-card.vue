@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from "vue";
+import { type PropType } from "vue";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
 import { useFeatureEvent } from "~/composables/nostr/useFeatureEvent";

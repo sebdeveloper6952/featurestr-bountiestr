@@ -1,16 +1,16 @@
 import { secp256k1 } from "@noble/curves/secp256k1";
-import { ProjPointType } from "@noble/curves/abstract/weierstrass";
+import { type ProjPointType } from "@noble/curves/abstract/weierstrass";
 import { bytesToHex, randomBytes } from "@noble/hashes/utils";
 import {
-  BlindedMessageData,
+  type BlindedMessageData,
+  type MintKeys,
+  type Proof,
+  type SerializedBlindedMessage,
+  type SerializedBlindedSignature,
   CashuMint,
   CashuWallet,
-  MintKeys,
-  Proof,
-  SerializedBlindedMessage,
   getEncodedToken,
   getDecodedToken,
-  SerializedBlindedSignature,
 } from "@cashu/cashu-ts";
 import { bytesToNumber, splitAmount } from "@cashu/cashu-ts/dist/lib/es6/utils";
 import {
