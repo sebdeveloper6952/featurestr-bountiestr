@@ -17,7 +17,7 @@
           >Pledge</outlined-button
         >
       </div>
-      <pledge-card v-for="pledge in pledges" :event="pledge" />
+      <pledge-card v-for="pledge in sortedPledges" :event="pledge" />
     </div>
     <div class="mt-4">
       <h4 class="font-bold">Comments</h4>
@@ -56,7 +56,10 @@ const id = r.params["id"] as string;
 const hexId = isHexKey(id) ? id : getEventIdFromDecodeResult(safeDecode(id));
 if (!hexId) throw new Error("Missing event id");
 const event = ref<NDKEvent>();
-const pledges = ref<NDKEvent[]>([]);
+const pledges = ref(new Map<string, NDKEvent>());
+const sortedPledges = computed(() =>
+  sortEventsByDate(pledges.value.values() as Iterable<NDKEvent>),
+);
 
 const showPledgeModal = ref(false);
 
@@ -68,13 +71,16 @@ onMounted(async () => {
       [{ kinds: [PledgeKind], "#a": [getEventCoordinate(event.value)] }],
       { closeOnEose: false },
     );
-    pledgesSub.on("event", (event) => {
-      pledges.value = sortEventsByDate([event, ...pledges.value]);
+    pledgesSub.on("event", (event): void => {
+      pledges.value.set(event.id, event);
     });
     pledgesSub.on("eose", async () => {
-      pledges.value = await useFilterUnspentPledges(
-        pledges.value as NDKEvent[],
+      const valid = await useFilterUnspentPledges(
+        pledges.value.values() as Iterable<NDKEvent>,
       );
+
+      pledges.value.clear();
+      for (const pledge of valid) pledges.value.set(pledge.id, pledge);
     });
     pledgesSub.start();
   }

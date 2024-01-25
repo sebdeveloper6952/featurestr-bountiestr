@@ -16,6 +16,8 @@
         <div>
           <numeric-input v-model="pledgeAmount" />
         </div>
+        <p class="font-bold mt-1">Requirements</p>
+        <text-area v-model="description" class="mt-4" />
       </div>
       <div v-if="pledgeStep === 1">
         <p class="font-bold">Lock Funds</p>
@@ -99,6 +101,7 @@ import {
 } from "~/composables/helpers/nip19";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
 import baseModal from "~/components/modals/base-modal.vue";
+import textArea from "~/components/forms/text-area.vue";
 import numericInput from "~/components/forms/numeric-input.vue";
 import { wallet } from "~/composables/cashu/wallet";
 import { type Token, getEncodedToken } from "@cashu/cashu-ts";
@@ -125,6 +128,7 @@ const event = ref<NDKEvent>();
 
 const amounts = [1, 21, 2100, 21000];
 const pledgeAmount = ref(1);
+const description = ref("");
 const pledgeSteps = ["amount", "lock", "pay", "success"];
 const pledgeStep = ref(0);
 const pubkeyToLockTo = ref<string>("");
@@ -180,7 +184,7 @@ const nextStep = async () => {
       const encodedToken = getEncodedToken(token);
       await useCreatePledgeOnFeature(
         event.value!,
-        "unlock conditions here",
+        description.value,
         encodedToken,
         pledgeAmount.value,
       );
