@@ -1,12 +1,12 @@
 <template>
   <img
     class="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-gray-800"
-    :src="user.profile?.image || 'https://robohash.org/' + user.pubkey"
+    :src="profile?.image || 'https://robohash.org/' + user.pubkey"
   />
 </template>
 
 <script setup lang="ts">
-import { type NDKUser } from "@nostr-dev-kit/ndk";
+import { type NDKUser, type NDKUserProfile } from "@nostr-dev-kit/ndk";
 
 const props = defineProps({
   user: {
@@ -15,7 +15,9 @@ const props = defineProps({
   },
 });
 
+const profile = ref<NDKUserProfile>();
+
 onMounted(async () => {
-  if (!props.user.profile) await props.user.fetchProfile();
+  profile.value = (await props.user.fetchProfile()) ?? undefined;
 });
 </script>
