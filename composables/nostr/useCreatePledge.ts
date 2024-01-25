@@ -4,7 +4,7 @@ import { useNdk } from "~/composables/nostr/ndk";
 export const useCreatePledge = async (
   title: string,
   description: string,
-  additionalTags: string[]
+  additionalTags: string[],
 ) => {
   const { ndk } = useNdk();
   if (ndk === null) return;

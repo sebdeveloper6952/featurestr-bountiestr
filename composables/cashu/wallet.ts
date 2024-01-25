@@ -7,17 +7,20 @@ import {
   type Proof,
   type SerializedBlindedMessage,
   type SerializedBlindedSignature,
+  type ReceiveTokenEntryResponse,
+  type AmountPreference,
+  type TokenEntry,
   CashuMint,
   CashuWallet,
   getEncodedToken,
   getDecodedToken,
 } from "@cashu/cashu-ts";
-import { bytesToNumber, splitAmount } from "@cashu/cashu-ts/dist/lib/es6/utils";
 import {
-  hashToCurve,
-  pointFromHex,
-  unblindSignature,
-} from "@cashu/cashu-ts/dist/lib/es6/DHKE";
+  bytesToNumber,
+  getDefaultAmountPreference,
+  splitAmount,
+} from "@cashu/cashu-ts/dist/lib/es6/utils";
+import * as dhke from "@cashu/cashu-ts/dist/lib/es6/DHKE";
 import { BlindedMessage } from "@cashu/cashu-ts/dist/lib/es6/model/BlindedMessage";
 
 const textEncoder = new TextEncoder();
@@ -26,11 +29,11 @@ const textDecoder = new TextDecoder();
 /** Copied from @cashu/cashu-ts/src/DHKE and modified to use textDecoder instead of encodeUint8toBase64 */
 function blindMessage(
   secret: Uint8Array,
-  r?: bigint
+  r?: bigint,
 ): { B_: ProjPointType<bigint>; r: bigint } {
   const secretMessageBase64 = textDecoder.decode(secret); //encodeUint8toBase64(secret);
   const secretMessage = new TextEncoder().encode(secretMessageBase64);
-  const Y = hashToCurve(secretMessage);
+  const Y = dhke.hashToCurve(secretMessage);
   if (!r) {
     r = bytesToNumber(secp256k1.utils.randomPrivateKey());
   }
@@ -44,12 +47,12 @@ function constructProofs(
   promises: Array<SerializedBlindedSignature>,
   rs: Array<bigint>,
   secrets: Array<Uint8Array>,
-  keys: MintKeys
+  keys: MintKeys,
 ): Array<Proof> {
   return promises.map((p: SerializedBlindedSignature, i: number) => {
-    const C_ = pointFromHex(p.C_);
-    const A = pointFromHex(keys[p.amount]);
-    const C = unblindSignature(C_, rs[i], A);
+    const C_ = dhke.pointFromHex(p.C_);
+    const A = dhke.pointFromHex(keys[p.amount]);
+    const C = dhke.unblindSignature(C_, rs[i], A);
     const proof = {
       id: p.id,
       amount: p.amount,
@@ -61,16 +64,18 @@ function constructProofs(
 }
 
 class P2PKCashuWallet extends CashuWallet {
+  p2pkSendLock: string | null = null;
+
   p2pkCreateRandomBlindedMessages(
     amount: number,
-    pubkey: string
+    pubkey: string,
   ): BlindedMessageData & { amounts: Array<number> } {
     const amounts = splitAmount(amount);
     return this.p2pkCreateBlindedMessages(amounts, pubkey);
   }
   p2pkCreateBlindedMessages(
     amounts: Array<number>,
-    pubkey: string
+    pubkey: string,
   ): BlindedMessageData & { amounts: Array<number> } {
     const blindedMessages: Array<SerializedBlindedMessage> = [];
     const secrets: Array<Uint8Array> = [];
@@ -89,7 +94,7 @@ class P2PKCashuWallet extends CashuWallet {
           },
         ])
           .replaceAll(/,/g, ", ")
-          .replaceAll(/:/g, ": ")
+          .replaceAll(/:/g, ": "),
       );
       secrets.push(secret);
       const { B_, r } = blindMessage(secret, deterministicR);
@@ -103,7 +108,7 @@ class P2PKCashuWallet extends CashuWallet {
   async p2pkRequestTokens(
     amount: number,
     id: string,
-    pubkey: string
+    pubkey: string,
   ): Promise<{ proofs: Array<Proof>; newKeys?: MintKeys }> {
     const { blindedMessages, secrets, rs } =
       this.p2pkCreateRandomBlindedMessages(amount, pubkey);
@@ -115,10 +120,61 @@ class P2PKCashuWallet extends CashuWallet {
         rs,
         secrets,
         //@ts-ignore
-        await this.getKeys(promises)
+        await this.getKeys(promises),
       ),
       //@ts-ignore
       newKeys: await this.changedKeys(promises),
+    };
+  }
+
+  async receiveTokenEntry(
+    tokenEntry: TokenEntry,
+    preference?: Array<AmountPreference>,
+    counter?: number,
+  ): Promise<ReceiveTokenEntryResponse> {
+    const proofsWithError: Array<Proof> = [];
+    const proofs: Array<Proof> = [];
+    let newKeys: MintKeys | undefined;
+    try {
+      const amount = tokenEntry.proofs.reduce(
+        (total, curr) => total + curr.amount,
+        0,
+      );
+      if (!preference) {
+        preference = getDefaultAmountPreference(amount);
+      }
+      // @ts-ignore
+      const { payload, blindedMessages } = this.createSplitPayload(
+        amount,
+        tokenEntry.proofs,
+        preference,
+        counter,
+      );
+      const { promises, error } = await CashuMint.split(
+        tokenEntry.mint,
+        payload,
+      );
+      const newProofs = constructProofs(
+        promises,
+        blindedMessages.rs,
+        blindedMessages.secrets,
+        // @ts-ignore
+        await this.getKeys(promises, tokenEntry.mint),
+      );
+      proofs.push(...newProofs);
+      newKeys =
+        tokenEntry.mint === this.mint.mintUrl
+          ? // @ts-ignore
+            await this.changedKeys([...(promises || [])])
+          : undefined;
+    } catch (error) {
+      console.error(error);
+      proofsWithError.push(...tokenEntry.proofs);
+    }
+    return {
+      proofs,
+      proofsWithError: proofsWithError.length ? proofsWithError : undefined,
+      newKeys,
     };
   }
 }
