@@ -32,6 +32,7 @@
               v-for="pledge in sortedPledges"
               :key="pledge.id"
               :event="pledge"
+              :spent="!unspentPledges.includes(pledge.id)"
             />
           </div>
         </div>
@@ -104,6 +105,7 @@ const hexId = isHexKey(id) ? id : getEventIdFromDecodeResult(safeDecode(id));
 if (!hexId) throw new Error("Missing event id");
 const event = ref<NDKEvent>();
 const pledges = ref(new Map<string, NDKEvent>());
+const unspentPledges = ref<string[]>([]);
 const sortedPledges = computed(() =>
   sortEventsByDate(pledges.value.values() as Iterable<NDKEvent>),
 );
@@ -113,9 +115,9 @@ const users = computed(() =>
 const totalPledged = computed(() =>
   getTokensTotal(users.value.map((u) => u.tokens).flat()),
 );
-const solutions = ref<Set<NDKEvent>>();
+const solutions = ref<NDKEvent[]>([]);
 const sortedSolutions = computed(() =>
-  sortEventsByDate(solutions.value?.values() as Iterable<NDKEvent>),
+  sortEventsByDate(solutions.value.values() as Iterable<NDKEvent>),
 );
 
 const showPledgeModal = ref(false);
@@ -132,16 +134,15 @@ onMounted(async () => {
       pledges.value.set(event.id, event);
     });
     pledgesSub.on("eose", async () => {
-      const valid = await useFilterUnspentPledges(
-        pledges.value.values() as Iterable<NDKEvent>,
-      );
-
-      pledges.value.clear();
-      for (const pledge of valid) pledges.value.set(pledge.id, pledge);
+      unspentPledges.value = (
+        await useFilterUnspentPledges(
+          pledges.value.values() as Iterable<NDKEvent>,
+        )
+      ).map((p) => p.id);
     });
     pledgesSub.start();
 
-    solutions.value = await useGetSolutionsForFeature(event.value);
+    solutions.value = Array.from(await useGetSolutionsForFeature(event.value));
   }
 });
 onUnmounted(() => {

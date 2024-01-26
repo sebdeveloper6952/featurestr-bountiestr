@@ -516,8 +516,8 @@ export async function filterValidTokens(tokens: Token[]) {
       const mint = await getMint(entry.mint);
       const firstProof = entry.proofs[0];
 
-      secretsByMint[entry.mint] = secretsByMint[entry.mint] || [];
-      secretsByMint[entry.mint].push(firstProof.secret);
+      secretsByMint[mint.mintUrl] = secretsByMint[mint.mintUrl] || [];
+      secretsByMint[mint.mintUrl].push(firstProof.secret);
     }
   }
 

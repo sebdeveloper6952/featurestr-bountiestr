@@ -16,9 +16,10 @@
         <p class="text-gray-500">{{ total }} sats</p>
       </div>
       <div class="ml-auto flex gap-2">
+        <span class="font-bold" v-if="spent">Spent</span>
         <outlined-button
           @click="withdrawalModal = true"
-          v-if="trustee === ndk.activeUser?.pubkey"
+          v-if="trustee === ndk.activeUser?.pubkey && !spent"
           >Withdraw</outlined-button
         >
         <icon-button @click="debug = true" icon="code" />
@@ -54,6 +55,7 @@ import { getTokenFromEvent } from "../../composables/helpers/pledge";
 
 const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
+  spent: { type: Boolean, default: false },
 });
 
 const debug = ref(false);
