@@ -20,7 +20,7 @@
       <button @click="navigateTo(`/feature/${nevent}`)">{{ title }}</button>
     </h1>
     <p class="px-4 text-gray-500">
-      {{ event.content }}
+      {{ description }}
     </p>
     <div class="w-full flex justify-center flex-wrap gap-2">
       <a
@@ -29,8 +29,9 @@
         >#{{ hashtag }}</a
       >
     </div>
-    <div v-if="showPledgeUsers">
+    <div v-if="showPledgeUsers" class="flex gap-2 items-center">
       <pubkey-facepile :pubkeys="pledgeAuthors" summarized />
+      <span v-if="total">{{ total }} sats</span>
     </div>
   </div>
 
@@ -39,18 +40,23 @@
 
 <script setup lang="ts">
 import { type PropType } from "vue";
+import type { Token } from "@cashu/cashu-ts";
 import { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
 import { useNdk } from "~/composables/nostr/ndk";
 import { useFeatureEvent } from "~/composables/nostr/useFeatureEvent";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
 import { sortEventsByDate } from "~/composables/helpers/event";
-import { getUsersFromPledges } from "~/composables/helpers/pledge";
+import {
+  getTokenFromPeldge as getTokenFromPledge,
+  getUsersFromPledges,
+} from "~/composables/helpers/pledge";
 import { useGetUnspentPledgesForFeature } from "~/composables/nostr/useGetUnspentPledgesForFeature";
 import pubkeyFacepile from "~/components/pubkey-facepile.vue";
 import userImage from "~/components/user-image.vue";
 import userName from "~/components/user-name.vue";
 import debugModal from "~/components/modals/debug-modal.vue";
+import { getTokensTotal } from "~/composables/helpers/cashu";
 
 const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
@@ -63,6 +69,7 @@ const { ndk } = useNdk();
 const { title, hashtags, description } = useFeatureEvent(props.event);
 
 const pledgeEvents = ref<NDKEvent[]>([]);
+const total = ref(0);
 const pledgeAuthors = ref<NDKUser[]>([]);
 
 const nevent = nip19.neventEncode({
@@ -74,11 +81,15 @@ const nevent = nip19.neventEncode({
 const pledges = ref<NDKEvent[]>([]);
 
 onMounted(async () => {
-  const events = sortEventsByDate(
+  const pledgeEvents = sortEventsByDate(
     await useGetUnspentPledgesForFeature(props.event),
   );
 
-  pledges.value = events;
-  pledgeAuthors.value = getUsersFromPledges(events);
+  pledges.value = pledgeEvents;
+  pledgeAuthors.value = getUsersFromPledges(pledgeEvents);
+  const tokens = pledgeEvents
+    .map((e) => getTokenFromPledge(e))
+    .filter(Boolean) as Token[];
+  total.value = getTokensTotal(tokens);
 });
 </script>

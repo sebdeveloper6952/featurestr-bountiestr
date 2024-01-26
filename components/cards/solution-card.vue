@@ -35,7 +35,7 @@ import iconButton from "~/components/buttons/icon-button.vue";
 import userImage from "~/components/user-image.vue";
 import userName from "~/components/user-name.vue";
 import { getTokenFromPeldge } from "~/composables/helpers/pledge";
-import { getTokenTotal } from "~/composables/helpers/cashu";
+import { getTokensTotal } from "~/composables/helpers/cashu";
 
 const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
@@ -52,7 +52,7 @@ onMounted(() => {
   const t = getTokenFromPeldge(props.event);
   if (t) {
     token.value = t;
-    total.value = getTokenTotal([t]);
+    total.value = getTokensTotal([t]);
   }
 });
 </script>

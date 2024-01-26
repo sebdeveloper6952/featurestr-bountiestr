@@ -9,7 +9,9 @@
       <div>
         <p>
           <user-name :user="event.author" />
-          {{ dayjs.unix(event.created_at!).format("lll") }}
+          <span class="text-gray-500 text-sm ml-2">{{
+            dayjs.unix(event.created_at!).format("lll")
+          }}</span>
         </p>
         <p class="text-gray-500">{{ total }} sats</p>
       </div>
@@ -48,7 +50,7 @@ import userImage from "~/components/user-image.vue";
 import userName from "~/components/user-name.vue";
 import withdrawalPledgeModal from "../modals/withdrawal-pledge-modal.vue";
 import { getTokenFromPeldge } from "~/composables/helpers/pledge";
-import { getTokenTotal } from "~/composables/helpers/cashu";
+import { getTokensTotal } from "~/composables/helpers/cashu";
 
 const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
@@ -64,7 +66,7 @@ onMounted(() => {
   const t = getTokenFromPeldge(props.event);
   if (t) {
     token.value = t;
-    total.value = getTokenTotal([t]);
+    total.value = getTokensTotal([t]);
   }
 });
 </script>

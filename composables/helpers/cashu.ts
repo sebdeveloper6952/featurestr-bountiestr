@@ -1,6 +1,6 @@
 import { type Token } from "@cashu/cashu-ts";
 
-export function getTokenTotal(tokens: Token[]) {
+export function getTokensTotal(tokens: Token[]) {
   return tokens.reduce(
     (t, token) =>
       t +
