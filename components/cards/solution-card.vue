@@ -14,7 +14,10 @@
       </div>
 
       <div class="ml-auto flex gap-2">
-        <icon-button @click="details = true" icon="details" />
+        <icon-button
+          @click="navigateTo('/feature/solution/details/' + nevent)"
+          icon="details"
+        />
         <icon-button @click="debug = true" icon="code" />
       </div>
     </div>
@@ -36,6 +39,7 @@ import userImage from "~/components/user-image.vue";
 import userName from "~/components/user-name.vue";
 import { getTokensTotal } from "~/composables/helpers/cashu";
 import { getTokenFromPledge } from "../../composables/helpers/pledge";
+import { nip19 } from "nostr-tools";
 
 const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
@@ -47,6 +51,13 @@ const withdrawalModal = ref(false);
 const { ndk } = useNdk();
 const token = ref<Token>();
 const total = ref(0);
+
+const nevent = nip19.neventEncode({
+  id: props.event.id,
+  author: props.event.author.pubkey,
+  kind: props.event.kind,
+  relays: [props.event.relay?.url!],
+});
 
 onMounted(() => {
   const t = getTokenFromPledge(props.event);
