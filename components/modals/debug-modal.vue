@@ -1,6 +1,6 @@
 <template>
   <base-modal :show="show" @close="$emit('close')" :cancellable="true">
-    <div class="md:w-[8in] px-2 py-4 overflow-auto">
+    <div class="md:w-[8in] px-2 py-4 overflow-auto max-h-screen">
       <code class="whitespace-pre px-2">{{
         JSON.stringify(event.rawEvent(), null, 2)
       }}</code>
