@@ -189,6 +189,7 @@ const nextStep = async () => {
         description.value,
         encodedToken,
         pledgeAmount.value,
+        pubkeyToLockTo.value,
       );
     } catch (error) {
       return;

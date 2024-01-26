@@ -21,7 +21,8 @@ export const usePostSolutionToFeature = async (
 
   e.tags = [
     ["a", getEventCoordinate(featureEvent)],
-    ["p", featureEvent.id],
+    ["p", featureEvent.author.pubkey],
+    ["e", featureEvent.id],
   ];
 
   await e.publish();

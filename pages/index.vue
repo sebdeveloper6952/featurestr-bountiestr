@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full p-4 flex justify-center">
-    <div class="w-full flex flex-col items-center gap-2">
+  <div class="w-full p-2 flex justify-center">
+    <div class="w-full md:max-w-screen-md flex flex-col items-center gap-2">
       <feature-request-card v-for="event in events" :event="event" />
     </div>
   </div>

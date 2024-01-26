@@ -1,30 +1,34 @@
 <template>
-  <div class="p-4">
-    <p class="text-xl font-bold">Create Feature Request</p>
+  <div class="w-full flex justify-center">
+    <div
+      class="p-2 md:p-0 w-full flex flex-col items-center justify-center md:max-w-screen-md lg:max-w-screen-lg"
+    >
+      <p class="text-xl font-bold">Create Feature Request</p>
 
-    <div class="w-full md:w-1/2">
-      <text-input v-model="title" label="Enter a title:" />
-      <text-area
-        v-model="description"
-        label="Enter your description:"
-        class="mt-4"
-      />
-      <p class="mt-4 text-sm">Additional tags:</p>
-      <div class="flex items-center gap-1">
-        <text-input v-model="tag" autocomplete="off" />
-        <outlined-button @click="addTag">Add</outlined-button>
-      </div>
-
-      <div class="flex gap-1">
-        <div
-          v-for="(t, i) in additionalTags"
-          class="w-fit mt-2 px-2 py-1 flex text-sm bg-blue-300/50 text-blue-500 font-bold rounded"
-        >
-          <p>{{ t }}</p>
-          <div @click="removeTag(i)" class="ml-2 cursor-pointer">x</div>
+      <div class="w-full md:w-1/2">
+        <text-input v-model="title" label="Enter a title:" />
+        <text-area
+          v-model="description"
+          label="Enter your description:"
+          class="mt-4"
+        />
+        <p class="mt-4 text-sm">Additional tags:</p>
+        <div class="flex items-center gap-1">
+          <text-input v-model="tag" autocomplete="off" />
+          <outlined-button @click="addTag">Add</outlined-button>
         </div>
+
+        <div class="flex gap-1">
+          <div
+            v-for="(t, i) in additionalTags"
+            class="w-fit mt-2 px-2 py-1 flex text-sm bg-blue-300/50 text-blue-500 font-bold rounded"
+          >
+            <p>{{ t }}</p>
+            <div @click="removeTag(i)" class="ml-2 cursor-pointer">x</div>
+          </div>
+        </div>
+        <outlined-button @click="onSubmit" class="mt-4">Submit</outlined-button>
       </div>
-      <outlined-button @click="onSubmit" class="mt-4">Submit</outlined-button>
     </div>
   </div>
 </template>

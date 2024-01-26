@@ -12,6 +12,10 @@
     >
       <user-image :user="event.author" />
     </div>
+    <div class="-translate-y-10">
+      <user-name :user="event.author" />
+    </div>
+
     <h1 class="text-darken mb-3 text-xl font-medium lg:px-14">
       <button @click="navigateTo(`/feature/${nevent}`)">{{ title }}</button>
     </h1>
@@ -45,6 +49,7 @@ import { getUsersFromPledges } from "~/composables/helpers/pledge";
 import { useGetUnspentPledgesForFeature } from "~/composables/nostr/useGetUnspentPledgesForFeature";
 import pubkeyFacepile from "~/components/pubkey-facepile.vue";
 import userImage from "~/components/user-image.vue";
+import userName from "~/components/user-name.vue";
 import debugModal from "~/components/modals/debug-modal.vue";
 
 const props = defineProps({

@@ -1,40 +1,69 @@
 <template>
-  <div class="w-full flex p-4 flex-col justify-center">
-    <div class="mt-4 w-full flex flex-col items-center gap-2">
-      <feature-request-card
-        v-if="event"
-        :event="event"
-        :show-pledge-users="false"
+  <div class="w-full flex justify-center">
+    <div class="w-full md:max-w-screen-md flex p-4 flex-col justify-center">
+      <div class="mt-4 w-full flex flex-col items-center gap-2">
+        <feature-request-card
+          v-if="event"
+          :event="event"
+          :show-pledge-users="false"
+        />
+      </div>
+
+      <!-- pledges -->
+      <div class="mt-4">
+        <div class="p-4 w-full justify-between bg-white rounded shadow-xl">
+          <div class="flex gap-2">
+            <h4 class="font-bold">Pledges</h4>
+            <div class="grow"></div>
+            <outlined-button
+              @click="showPledgeModal = true"
+              icon="cash_plus"
+              class=""
+              >Pledge</outlined-button
+            >
+          </div>
+
+          <pledge-card v-for="pledge in sortedPledges" :event="pledge" />
+        </div>
+      </div>
+
+      <!-- solutions -->
+      <div
+        class="p-4 mt-4 flex gap-2 w-full justify-start rounded-xl bg-white shadow-xl"
+      >
+        <div class="w-full">
+          <div class="flex justify-between items-center">
+            <h4 class="font-bold">Solutions</h4>
+            <div class="grow"></div>
+            <outlined-button
+              @click="navigateTo('/feature/solution/' + id)"
+              icon="code"
+              >Post Solution</outlined-button
+            >
+          </div>
+          <div class="mt-4 flex flex-col">
+            <solution-card
+              :key="solution.id"
+              v-for="solution in solutions"
+              :event="solution"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 p-4 w-full rounded-xl bg-white text-center shadow-xl">
+        <h4 class="text-left font-bold">Comments</h4>
+        <div class="w-full flex justify-center">
+          <div class="flex">
+            <p class="text-gray-500">No comments yet</p>
+          </div>
+        </div>
+      </div>
+
+      <pledge-on-feature-modal
+        :show="showPledgeModal"
+        @close="showPledgeModal = false"
       />
     </div>
-    <div class="mt-4">
-      <div class="flex gap-2 w-full justify-between">
-        <h4 class="font-bold">Pledges</h4>
-        <outlined-button
-          @click="showPledgeModal = true"
-          icon="cash_plus"
-          class=""
-          >Pledge</outlined-button
-        >
-      </div>
-      <pledge-card v-for="pledge in sortedPledges" :event="pledge" />
-    </div>
-    <div class="flex gap-2 w-full justify-start">
-      <outlined-button
-        @click="navigateTo('/feature/solution/' + id)"
-        icon="cash_plus"
-        class=""
-        >Post Solution</outlined-button
-      >
-    </div>
-    <div class="mt-4">
-      <h4 class="font-bold">Comments</h4>
-    </div>
-
-    <pledge-on-feature-modal
-      :show="showPledgeModal"
-      @close="showPledgeModal = false"
-    />
   </div>
 </template>
 
@@ -50,12 +79,14 @@ import {
 import outlinedButton from "~/components/buttons/outlined-button.vue";
 import pledgeOnFeatureModal from "~/components/modals/pledge-on-feature-modal.vue";
 import { useFilterUnspentPledges } from "~/composables/nostr/useFilterUnspentPledges";
+import { useGetSolutionsForFeature } from "~/composables/nostr/useGetSolutionsForFeature";
 import {
   getEventCoordinate,
   sortEventsByDate,
 } from "~/composables/helpers/event";
 import pledgeCard from "~/components/cards/pledge-card.vue";
-import { PledgeKind } from "../../composables/nostr/kinds";
+import solutionCard from "~/components/cards/solution-card.vue";
+import { PledgeKind } from "~/composables/nostr/kinds";
 
 const r = useRoute();
 const { ndk } = useNdk();
@@ -68,6 +99,10 @@ const pledges = ref(new Map<string, NDKEvent>());
 const sortedPledges = computed(() =>
   sortEventsByDate(pledges.value.values() as Iterable<NDKEvent>),
 );
+const solutions = ref<Set<NDKEvent>>();
+const sortedSolutions = computed(() => {
+  sortEventsByDate(solutions.value?.values() as Iterable<NDKEvent>);
+});
 
 const showPledgeModal = ref(false);
 
@@ -91,6 +126,8 @@ onMounted(async () => {
       for (const pledge of valid) pledges.value.set(pledge.id, pledge);
     });
     pledgesSub.start();
+
+    solutions.value = await useGetSolutionsForFeature(event.value);
   }
 });
 onUnmounted(() => {

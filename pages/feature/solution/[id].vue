@@ -8,7 +8,10 @@
         label="Enter your description:"
         class="mt-4"
       />
-      <outlined-button @click="onSubmit" class="mt-4"
+      <outlined-button
+        @click="onSubmit"
+        :disabled="description === ''"
+        class="mt-4"
         >Submit Solution</outlined-button
       >
     </div>
@@ -37,14 +40,14 @@ const description = ref("");
 const hexId = isHexKey(id) ? id : getEventIdFromDecodeResult(safeDecode(id));
 if (!hexId) throw new Error("Missing event id");
 
-onMounted(() => {
-  ndk.fetchEvent(hexId).then((e) => {
-    if (e) event.value = e;
-  });
+onMounted(async () => {
+  event.value = await ndk.fetchEvent(hexId);
+  console.warn(event.value);
 });
 
 const onSubmit = async () => {
   if (event === undefined) throw new Error("undefined feature event");
-  await usePostSolutionToFeature(event, description.value);
+  await usePostSolutionToFeature(event.value, description.value);
+  navigateTo("/feature/" + id);
 };
 </script>
