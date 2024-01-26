@@ -22,6 +22,10 @@
           </div>
           <user-name :user="solution.author" />
         </div>
+        <div class="my-2">
+          <p>Optional message:</p>
+          <text-area v-model="content" />
+        </div>
         <div class="flex gap-2 justify-between">
           <outline-button @click="emit('close')">Cancel</outline-button>
           <outline-button @click="confirm">Payout</outline-button>
@@ -42,6 +46,9 @@ import { P2PKCashuWallet, getMint } from "../../composables/cashu/wallet";
 import { getEncodedToken, type Token, type TokenEntry } from "@cashu/cashu-ts";
 import { getTokenFromEvent } from "../../composables/helpers/pledge";
 import { useNdk } from "../../composables/nostr/ndk";
+import { usePostPayoutToSolutionEvent } from "~/composables/nostr/usePostPayoutToSolutionEvent";
+import { getTokensTotal } from "~/composables/helpers/cashu";
+import textArea from "../forms/text-area.vue";
 
 const props = defineProps({
   show: {
@@ -68,6 +75,7 @@ const { ndk } = useNdk();
 const total = ref(0);
 const sent = ref(false);
 const loading = ref(false);
+const content = ref("");
 const unlockablePledges = computed(() =>
   props.pledges.filter(
     (p) =>
@@ -124,9 +132,12 @@ const confirm = async () => {
     }
 
     const lockedToken: Token = { token: lockedTokenEntries };
-    console.log(getEncodedToken(lockedToken));
 
-    // TODO: post event
+    await usePostPayoutToSolutionEvent(
+      props.solution,
+      content.value,
+      lockedToken,
+    );
   }
   loading.value = false;
 };

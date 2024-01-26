@@ -38,3 +38,5 @@ anoter test user: 814fff2674370207afe2f581a78f0a4fd9949eb2239317a45217fbba2297e6
     - `cashu` tag containing P2PK token locked to `solution.pubkey`
     - `amount` tag containing stringified token about (in sats)
     - `p:payee` tag with pubkey of `solution.pubkey`
+
+cashuAeyJ0b2tlbiI6W3sibWludCI6Imh0dHBzOi8vODMzMy5zcGFjZTozMzM4IiwicHJvb2ZzIjpbeyJpZCI6IjAwNzU5ZTNmOGIwNmIzNmYiLCJhbW91bnQiOjEsInNlY3JldCI6IltcIlAyUEtcIiwge1wiZGF0YVwiOiBcIjAyNWQwNDM5NDNhMDQwMGVlOGM5NTFlMjc3ZWI2NTlkNmFmZTdhZWU3Nzg0NTE4ZGNjYTMwYTk0ZGJmOGJjYWNlOVwiLCBcIm5vbmNlXCI6IFwiNTc4M2Y4YzMyOTgxYWUwMDZiMDNjNGU5NjNlYmViYTlcIn1dIiwiQyI6IjAzNWVjMzM1YzU5NjQwNDg1NzFlNDZlN2Y2YWQ4MDJlODM5MDVkOTExMzVkZmY0NjNmZDdhYmFjNTFkYzE2MjZhOSJ9XX1dfQ

@@ -88,6 +88,7 @@ import {
 } from "~/composables/nostr/kinds";
 import { getEventCoordinate } from "~/composables/helpers/event";
 import payoutToSolutionModal from "~/components/modals/payout-to-solution-modal.vue";
+import { useFilterUnspentPledges } from "~/composables/nostr/useFilterUnspentPledges";
 
 const { ndk } = useNdk();
 const r = useRoute();
@@ -119,17 +120,20 @@ onMounted(async () => {
   if (!featureRequestEventCord)
     throw new Error("solution event is missing feature request event id");
 
+  const [kind, pubkey, d] = featureRequestEventCord.split(":");
+
   const featureRequest =
     (await ndk.fetchEvent({
       kinds: [FeatureRequestKind],
-      "#a": [featureRequestEventCord],
+      authors: [pubkey],
+      "#d": [d],
     })) ?? undefined;
 
   if (!featureRequest) throw new Error("Failed to load feature request");
 
   featureRequestEvent.value = featureRequest;
 
-  pledges.value = Array.from(
+  pledges.value = await useFilterUnspentPledges(
     await ndk.fetchEvents({
       kinds: [PledgeKind],
       "#a": [featureRequestEventCord],
