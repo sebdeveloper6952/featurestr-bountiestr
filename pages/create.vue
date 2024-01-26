@@ -1,7 +1,7 @@
 <template>
   <div class="w-full flex justify-center">
     <div
-      class="p-2 md:p-0 w-full flex flex-col items-center justify-center md:max-w-screen-md lg:max-w-screen-lg"
+      class="p-2 md:p-0 w-full md:max-w-screen-md lg:max-w-screen-lg flex flex-col items-center justify-center"
     >
       <p class="text-xl font-bold">Create Feature Request</p>
 

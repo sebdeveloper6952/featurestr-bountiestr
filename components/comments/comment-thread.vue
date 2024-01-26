@@ -6,7 +6,7 @@
         >Reply</outlined-button
       >
     </div>
-    <div class="flex gap-2 flex-col">
+    <div class="mt-2 flex gap-2 flex-col">
       <new-comment-form
         v-if="reply"
         :root-event="rootEvent"

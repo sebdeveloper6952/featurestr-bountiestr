@@ -1,19 +1,23 @@
 <template>
-  <div class="p-4">
-    <p class="text-xl font-bold">Post Solution to Feature</p>
+  <div class="w-full p-4 flex justify-center">
+    <div
+      class="w-full md:max-w-screen-md lg:max-w-screen-lg flex flex-col items-center justify-center"
+    >
+      <p class="text-xl font-bold">Post Solution to Feature</p>
 
-    <div class="w-full md:w-1/2">
-      <text-area
-        v-model="description"
-        label="Enter your description:"
-        class="mt-4"
-      />
-      <outlined-button
-        @click="onSubmit"
-        :disabled="description === ''"
-        class="mt-4"
-        >Submit Solution</outlined-button
-      >
+      <div class="w-full md:w-1/2">
+        <text-area
+          v-model="description"
+          label="Enter your description:"
+          class="mt-4"
+        />
+        <outlined-button
+          @click="onSubmit"
+          :disabled="description === ''"
+          class="mt-4"
+          >Submit Solution</outlined-button
+        >
+      </div>
     </div>
   </div>
 </template>
