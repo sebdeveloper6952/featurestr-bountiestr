@@ -13,7 +13,12 @@
     <div class="flex" v-if="reply === false">
       <outlined-button @click="reply = true">Reply</outlined-button>
     </div>
-    <new-comment-form v-if="reply" :root-event="root" :parent="event">
+    <new-comment-form
+      v-if="reply"
+      :root-event="root"
+      :parent="event"
+      @post="reply = false"
+    >
       <template v-slot:buttons>
         <outlined-button @click="reply = false">Cancel</outlined-button>
       </template>

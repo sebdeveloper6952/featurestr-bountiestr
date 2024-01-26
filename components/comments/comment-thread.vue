@@ -27,6 +27,7 @@
         :parent="rootEvent"
         :root="rootEvent"
         :events="events"
+        @post="handleEvent"
       />
     </div>
   </div>
@@ -80,6 +81,7 @@ let sub: NDKSubscription;
 
 const handleEvent = (event: NDKEvent) => {
   eventMap.value.set(event.id, event);
+  reply.value = false;
 };
 onMounted(async () => {
   const filter: NDKFilter = kinds.isParameterizedReplaceableKind(
