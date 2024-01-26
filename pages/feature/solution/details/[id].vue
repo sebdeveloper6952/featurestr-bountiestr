@@ -71,7 +71,11 @@
 <script setup lang="ts">
 import { useNdk } from "~/composables/nostr/ndk";
 import dayjs from "dayjs";
-import { NDKEvent, NDKSubscription } from "@nostr-dev-kit/ndk";
+import {
+  NDKEvent,
+  NDKSubscription,
+  NDKSubscriptionCacheUsage,
+} from "@nostr-dev-kit/ndk";
 import {
   isHexKey,
   safeDecode,
@@ -133,21 +137,24 @@ onMounted(async () => {
 
   featureRequestEvent.value = featureRequest;
 
+  payoutSub = ndk.subscribe(
+    {
+      kinds: [PayoutKind],
+      "#a": [getEventCoordinate(event.value as NDKEvent)],
+    },
+    { closeOnEose: false },
+  );
+  payoutSub.on("event", (event: NDKEvent): void => {
+    payoutsMap.value.set(event.id, event);
+  });
+  payoutSub.start();
+
   pledges.value = await useFilterUnspentPledges(
     await ndk.fetchEvents({
       kinds: [PledgeKind],
       "#a": [featureRequestEventCord],
     }),
   );
-
-  payoutSub = ndk.subscribe({
-    kinds: [PayoutKind],
-    "#a": [getEventCoordinate(event.value as NDKEvent)],
-  });
-  payoutSub.on("event", (event: NDKEvent): void => {
-    payoutsMap.value.set(event.id, event);
-  });
-  payoutSub.start();
 });
 
 onUnmounted(() => {

@@ -89,7 +89,7 @@ onMounted(async () => {
   )
     ? { kinds: [CommentKind], "#a": [getEventCoordinate(props.rootEvent)] }
     : { kinds: [CommentKind], "#e": [props.rootEvent.id] };
-  const sub = await ndk.subscribe([filter]);
+  const sub = await ndk.subscribe([filter], { closeOnEose: false });
   sub.on("event", handleEvent);
   sub.start();
 });
