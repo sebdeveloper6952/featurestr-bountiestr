@@ -32,15 +32,10 @@ import baseModal from "~/components/modals/base-modal.vue";
 import outlineButton from "~/components/buttons/outlined-button.vue";
 import userName from "../user-name.vue";
 import userImage from "../user-image.vue";
-import {
-  P2PKCashuWallet,
-  getMint,
-  wallet,
-} from "../../composables/cashu/wallet";
+import { P2PKCashuWallet, getMint } from "../../composables/cashu/wallet";
 import { getEncodedToken, type Token, type TokenEntry } from "@cashu/cashu-ts";
 import { getTokenFromPledge } from "../../composables/helpers/pledge";
 import { useNdk } from "../../composables/nostr/ndk";
-import { PayoutKind } from "../../composables/nostr/kinds";
 
 const props = defineProps({
   show: {
