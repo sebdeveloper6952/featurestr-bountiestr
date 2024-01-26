@@ -19,7 +19,9 @@
     >
       <div class="flex items-center">
         <p class="text-gray-500">Solution submitted by:</p>
-        <user-image :user="event?.author" class="ml-2" />
+        <div class="w-8 h-8">
+          <user-image :user="event?.author" class="ml-2" />
+        </div>
         <div class="ml-2 flex items-center gap-2">
           <user-name :user="event?.author" />
           <p class="text-gray-500 text-sm">

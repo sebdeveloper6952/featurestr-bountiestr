@@ -1,7 +1,9 @@
 <template>
   <div class="flex gap-2 flex-col">
     <div class="flex gap-2">
-      <user-image :user="event.author" />
+      <div class="h-8 w-8">
+        <user-image :user="event.author" />
+      </div>
       <user-name :user="event.author" />
       <div class="ml-auto">
         <icon-button @click="debug = true" icon="code" />
