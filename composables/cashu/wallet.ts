@@ -74,7 +74,7 @@ function constructProofs(
 }
 
 // @ts-expect-error
-class P2PKCashuWallet extends CashuWallet {
+export class P2PKCashuWallet extends CashuWallet {
   p2pkReceiveSecretKey: string | null = null;
   p2pkSendLockPubkey: string | null = null;
 
