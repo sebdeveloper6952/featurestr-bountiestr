@@ -45,7 +45,7 @@
 
     <div
       v-if="payouts.length > 0"
-      class="mt-4 w-full md:max-w-screen-md rounded-xl bg-white p-4 shadow-xl relative"
+      class="mt-4 w-full md:max-w-screen-md rounded-xl bg-white p-4 shadow-xl"
     >
       <h4 class="text-left font-bold">Payouts</h4>
       <payout-card v-for="payout in payouts" :event="payout" />
@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import { useNdk } from "~/composables/nostr/ndk";
 import dayjs from "dayjs";
-import NDK, { NDKEvent, NDKSubscription } from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKSubscription } from "@nostr-dev-kit/ndk";
 import {
   isHexKey,
   safeDecode,

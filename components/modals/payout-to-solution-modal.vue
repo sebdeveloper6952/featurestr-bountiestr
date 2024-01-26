@@ -43,11 +43,10 @@ import outlineButton from "~/components/buttons/outlined-button.vue";
 import userName from "../user-name.vue";
 import userImage from "../user-image.vue";
 import { P2PKCashuWallet, getMint } from "../../composables/cashu/wallet";
-import { getEncodedToken, type Token, type TokenEntry } from "@cashu/cashu-ts";
+import { type Token, type TokenEntry } from "@cashu/cashu-ts";
 import { getTokenFromEvent } from "../../composables/helpers/pledge";
 import { useNdk } from "../../composables/nostr/ndk";
 import { usePostPayoutToSolutionEvent } from "~/composables/nostr/usePostPayoutToSolutionEvent";
-import { getTokensTotal } from "~/composables/helpers/cashu";
 import textArea from "../forms/text-area.vue";
 
 const props = defineProps({

@@ -15,7 +15,9 @@
         </p>
         <p class="text-gray-500">
           {{ total }} sats
-          <span v-if="redeemed" class="font-bold">Redeemed</span>
+          <span v-if="redeemed" class="font-bold" @click="redeem = true"
+            >Redeemed</span
+          >
         </p>
       </div>
       <div class="ml-auto flex gap-2">
@@ -31,6 +33,13 @@
       {{ event.content }}
     </p>
 
+    <redeem-payout-modal
+      :event="event"
+      @close="
+        redeem = false;
+        redeemed = true;
+      "
+    />
     <debug-modal :event="event" :show="debug" @close="debug = false" />
   </div>
 </template>
@@ -46,6 +55,7 @@ import iconButton from "~/components/buttons/icon-button.vue";
 import outlinedButton from "../buttons/outlined-button.vue";
 import userImage from "~/components/user-image.vue";
 import userName from "~/components/user-name.vue";
+import redeemPayoutModal from "../modals/redeem-payout-modal.vue";
 import { getTokensTotal } from "~/composables/helpers/cashu";
 import { getTokenFromEvent } from "../../composables/helpers/pledge";
 import { getMint } from "../../composables/cashu/wallet";
@@ -59,6 +69,7 @@ const withdrawalModal = ref(false);
 const { ndk } = useNdk();
 const token = ref<Token>();
 const total = ref(0);
+const redeem = ref(false);
 const redeemed = ref(false);
 const payee = computed(
   () =>
@@ -71,18 +82,19 @@ onMounted(async () => {
     token.value = t;
     total.value = getTokensTotal([t]);
 
+    redeemed.value = true;
     for (const entry of t.token) {
       const mint = await getMint(entry.mint);
       const spent = await mint.check({
         proofs: entry.proofs.map((p) => ({ secret: p.secret })),
       });
       const anySpendable = spent.spendable.some((v) => v === true);
+
       if (anySpendable) {
         redeemed.value = false;
         break;
       }
     }
-    redeemed.value = true;
   }
 });
 </script>
