@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import { useNdk } from "~/composables/nostr/ndk";
 import dayjs from "dayjs";
-import { NDKEvent, NDKSubscription } from "@nostr-dev-kit/ndk";
+import NDK, { NDKEvent, NDKSubscription } from "@nostr-dev-kit/ndk";
 import {
   isHexKey,
   safeDecode,
@@ -138,7 +138,7 @@ onMounted(async () => {
 
   payoutSub = ndk.subscribe({
     kinds: [PayoutKind],
-    "#a": [getEventCoordinate(featureRequest)],
+    "#a": [getEventCoordinate(event.value as NDKEvent)],
   });
   payoutSub.on("event", (event: NDKEvent): void => {
     payoutsMap.value.set(event.id, event);
