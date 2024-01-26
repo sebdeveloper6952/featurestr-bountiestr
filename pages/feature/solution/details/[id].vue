@@ -39,6 +39,12 @@
         >
       </div>
     </div>
+    <div
+      v-if="event"
+      class="mt-4 w-full md:max-w-screen-md rounded-xl bg-white"
+    >
+      <comment-thread :root-event="event" />
+    </div>
   </div>
 </template>
 
@@ -53,6 +59,7 @@ import {
 } from "~/composables/helpers/nip19";
 import featureRequestCard from "~/components/cards/feature-request-card.vue";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
+import commentThread from "../../../../components/comments/comment-thread.vue";
 import {
   FeatureRequestKind,
   PledgeKind,
