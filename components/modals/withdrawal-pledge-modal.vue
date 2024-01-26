@@ -33,7 +33,7 @@ import baseModal from "~/components/modals/base-modal.vue";
 import outlineButton from "~/components/buttons/outlined-button.vue";
 import { wallet } from "../../composables/cashu/wallet";
 import { getEncodedToken } from "@cashu/cashu-ts";
-import { getTokenFromPledge } from "../../composables/helpers/pledge";
+import { getTokenFromEvent } from "../../composables/helpers/pledge";
 
 const props = defineProps({
   show: {
@@ -51,7 +51,7 @@ const emit = defineEmits(["close"]);
 const encodedToken = ref();
 
 const confirm = async () => {
-  const token = getTokenFromPledge(props.event);
+  const token = getTokenFromEvent(props.event);
   if (!token) return alert("No token on pledge");
   const { token: newToken } = await wallet.receive(token);
   encodedToken.value = getEncodedToken(newToken);

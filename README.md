@@ -22,6 +22,7 @@ anoter test user: 814fff2674370207afe2f581a78f0a4fd9949eb2239317a45217fbba2297e6
     - `content`: human readable message describing the unlock conditions
     - `a` tag referncing k:37300
     - `p` tag of `thing.pubkey`
+    - `p:trustee` optional pubkey of a user being trusted to hold the token
     - `cashu` tag containing token
     - `amount` tag containing amount (in sats)
   - comment on feature request
@@ -36,4 +37,4 @@ anoter test user: 814fff2674370207afe2f581a78f0a4fd9949eb2239317a45217fbba2297e6
     - `e` tag referencing solution
     - `cashu` tag containing P2PK token locked to `solution.pubkey`
     - `amount` tag containing stringified token about (in sats)
-    - `p` tag with pubkey of `solution.pubkey`
+    - `p:payee` tag with pubkey of `solution.pubkey`

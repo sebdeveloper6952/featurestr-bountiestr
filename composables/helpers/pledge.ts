@@ -1,8 +1,8 @@
 import { type NDKEvent, type NDKUser } from "@nostr-dev-kit/ndk";
 import { getDecodedToken, type Token } from "@cashu/cashu-ts";
 
-export function getTokenFromPledge(pledge: NDKEvent) {
-  const cashu = pledge.tags.find((t) => t[0] === "cashu")?.[1];
+export function getTokenFromEvent(event: NDKEvent) {
+  const cashu = event.tags.find((t) => t[0] === "cashu")?.[1];
   if (!cashu) return null;
   return getDecodedToken(cashu);
 }
@@ -15,7 +15,7 @@ export function getUsersFromPledges(pledges: Iterable<NDKEvent>) {
       existing = { user: pledge.author, tokens: [] };
       users.set(pledge.author.pubkey, existing);
     }
-    const token = getTokenFromPledge(pledge);
+    const token = getTokenFromEvent(pledge);
     if (token) existing.tokens.push(token);
   }
   return Array.from(users.values());

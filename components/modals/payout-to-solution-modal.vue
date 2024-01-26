@@ -34,7 +34,7 @@ import userName from "../user-name.vue";
 import userImage from "../user-image.vue";
 import { P2PKCashuWallet, getMint } from "../../composables/cashu/wallet";
 import { getEncodedToken, type Token, type TokenEntry } from "@cashu/cashu-ts";
-import { getTokenFromPledge } from "../../composables/helpers/pledge";
+import { getTokenFromEvent } from "../../composables/helpers/pledge";
 import { useNdk } from "../../composables/nostr/ndk";
 
 const props = defineProps({
@@ -79,7 +79,7 @@ const confirm = async () => {
 
   loading.value = true;
   const tokens = unlockablePledges.value
-    .map((p) => getTokenFromPledge(p))
+    .map((p) => getTokenFromEvent(p))
     .flat()
     .filter(Boolean) as Token[];
   if (tokens.length > 0) {

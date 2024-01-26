@@ -39,6 +39,15 @@
         >
       </div>
     </div>
+
+    <div
+      v-if="payouts.length > 0"
+      class="mt-4 w-full md:max-w-screen-md rounded-xl bg-white p-4 shadow-xl relative"
+    >
+      <h4 class="text-left font-bold">Payouts</h4>
+      <payout-card v-for="payout in payouts" :event="payout" />
+    </div>
+
     <div
       v-if="event"
       class="mt-4 w-full md:max-w-screen-md rounded-xl bg-white"
@@ -51,7 +60,7 @@
 <script setup lang="ts">
 import { useNdk } from "~/composables/nostr/ndk";
 import dayjs from "dayjs";
-import { NDKEvent } from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKSubscription } from "@nostr-dev-kit/ndk";
 import {
   isHexKey,
   safeDecode,
@@ -59,11 +68,14 @@ import {
 } from "~/composables/helpers/nip19";
 import featureRequestCard from "~/components/cards/feature-request-card.vue";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
-import commentThread from "../../../../components/comments/comment-thread.vue";
+import commentThread from "~/components/comments/comment-thread.vue";
+import payoutCard from "../../../../components/cards/payout-card.vue";
 import {
   FeatureRequestKind,
+  PayoutKind,
   PledgeKind,
-} from "../../../../composables/nostr/kinds";
+} from "~/composables/nostr/kinds";
+import { getEventCoordinate } from "~/composables/helpers/event";
 
 const { ndk } = useNdk();
 const r = useRoute();
@@ -76,6 +88,16 @@ if (!hexId) throw new Error("Missing event id");
 
 const pledges = ref<NDKEvent[]>([]);
 
+let payoutSub: NDKSubscription;
+const payoutsMap = ref(new Map<string, NDKEvent>());
+const payouts = computed(
+  () => Array.from(payoutsMap.value.values()) as NDKEvent[],
+);
+
+const hasPledged = computed(() =>
+  pledges.value.some((p) => p.author.pubkey === ndk.activeUser?.pubkey),
+);
+
 onMounted(async () => {
   event.value = (await ndk.fetchEvent(hexId)) ?? undefined;
   const featureRequestEventCord = event.value?.tags.find(
@@ -83,11 +105,16 @@ onMounted(async () => {
   )?.[1];
   if (!featureRequestEventCord)
     throw new Error("solution event is missing feature request event id");
-  featureRequestEvent.value =
+
+  const featureRequest =
     (await ndk.fetchEvent({
       kinds: [FeatureRequestKind],
       "#a": [featureRequestEventCord],
     })) ?? undefined;
+
+  if (!featureRequest) throw new Error("Failed to load feature request");
+
+  featureRequestEvent.value = featureRequest;
 
   pledges.value = Array.from(
     await ndk.fetchEvents({
@@ -95,9 +122,18 @@ onMounted(async () => {
       "#a": [featureRequestEventCord],
     }),
   );
+
+  payoutSub = ndk.subscribe({
+    kinds: [PayoutKind],
+    "#a": [getEventCoordinate(featureRequest)],
+  });
+  payoutSub.on("event", (event: NDKEvent): void => {
+    payoutsMap.value.set(event.id, event);
+  });
+  payoutSub.start();
 });
 
-const hasPledged = computed(() =>
-  pledges.value.some((p) => p.author.pubkey === ndk.activeUser?.pubkey),
-);
+onUnmounted(() => {
+  if (payoutSub) payoutSub.stop();
+});
 </script>

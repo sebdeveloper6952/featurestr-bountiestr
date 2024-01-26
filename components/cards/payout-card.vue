@@ -18,8 +18,8 @@
       <div class="ml-auto flex gap-2">
         <outlined-button
           @click="withdrawalModal = true"
-          v-if="event.author.pubkey === ndk.activeUser?.pubkey"
-          >Withdraw</outlined-button
+          v-if="payee === ndk.activeUser?.pubkey"
+          >Redeem</outlined-button
         >
         <icon-button @click="debug = true" icon="code" />
       </div>
@@ -28,11 +28,6 @@
       {{ event.content }}
     </p>
 
-    <withdrawal-pledge-modal
-      :event="event"
-      :show="withdrawalModal"
-      @close="withdrawalModal = false"
-    />
     <debug-modal :event="event" :show="debug" @close="debug = false" />
   </div>
 </template>
@@ -48,7 +43,6 @@ import iconButton from "~/components/buttons/icon-button.vue";
 import outlinedButton from "../buttons/outlined-button.vue";
 import userImage from "~/components/user-image.vue";
 import userName from "~/components/user-name.vue";
-import withdrawalPledgeModal from "../modals/withdrawal-pledge-modal.vue";
 import { getTokensTotal } from "~/composables/helpers/cashu";
 import { getTokenFromEvent } from "../../composables/helpers/pledge";
 
@@ -61,6 +55,10 @@ const withdrawalModal = ref(false);
 const { ndk } = useNdk();
 const token = ref<Token>();
 const total = ref(0);
+const payee = computed(
+  () =>
+    props.event.tags.find((t) => t[0] === "p" && t[1] && t[3] === "payee")?.[1],
+);
 
 onMounted(() => {
   const t = getTokenFromEvent(props.event);
