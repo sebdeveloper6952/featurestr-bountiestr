@@ -18,7 +18,7 @@
       <div class="ml-auto flex gap-2">
         <outlined-button
           @click="withdrawalModal = true"
-          v-if="event.author.pubkey === ndk.activeUser?.pubkey"
+          v-if="trustee === ndk.activeUser?.pubkey"
           >Withdraw</outlined-button
         >
         <icon-button @click="debug = true" icon="code" />
@@ -61,6 +61,13 @@ const withdrawalModal = ref(false);
 const { ndk } = useNdk();
 const token = ref<Token>();
 const total = ref(0);
+
+const trustee = computed(
+  () =>
+    props.event.tags.find(
+      (t) => t[0] === "p" && t[1] && t[3] === "trustee",
+    )?.[1] || props.event.author.pubkey,
+);
 
 onMounted(() => {
   const t = getTokenFromEvent(props.event);
