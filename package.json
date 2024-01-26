@@ -31,6 +31,7 @@
     "dayjs": "^1.11.10",
     "nostr-tools": "^2.1.4",
     "nuxt-icons": "^3.2.1",
+    "qrcode-vue3": "^1.6.8",
     "webln": "^0.3.2"
   }
 }

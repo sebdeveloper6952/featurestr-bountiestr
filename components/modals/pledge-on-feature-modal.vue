@@ -45,11 +45,12 @@
         </div>
       </div>
       <div v-if="pledgeStep === 2">
-        <img
+        <!-- <img
           :src="`https://chart.googleapis.com/chart?cht=qr&chs=512x512&chl=${payRequest}`"
           alt="img"
           class="w-full h-auto"
-        />
+        /> -->
+        <qr-code :data="payRequest" />
         <div class="flex gap-2 mt-2">
           <outlined-button @click="openInvoiceInApp">Open App</outlined-button>
           <outlined-button @click="payWithWebLN">WebLN</outlined-button>
@@ -91,6 +92,7 @@ import { type Token, getEncodedToken } from "@cashu/cashu-ts";
 import { useCreatePledgeOnFeature } from "~/composables/nostr/useCreatePledgeOnFeature";
 import pubkeySelect from "~/components/forms/pubkey-select.vue";
 import { useGetPledgesForFeature } from "~/composables/nostr/useGetPledgesForFeature";
+import qrCode from "~/components/qr-code.vue";
 
 const props = defineProps({
   show: {
