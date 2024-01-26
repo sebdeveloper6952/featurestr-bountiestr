@@ -13,7 +13,10 @@
             dayjs.unix(event.created_at!).format("lll")
           }}</span>
         </p>
-        <p class="text-gray-500">{{ total }} sats</p>
+        <p class="text-gray-500">
+          {{ total }} sats
+          <span v-if="redeemed" class="font-bold">Redeemed</span>
+        </p>
       </div>
       <div class="ml-auto flex gap-2">
         <outlined-button
@@ -45,6 +48,7 @@ import userImage from "~/components/user-image.vue";
 import userName from "~/components/user-name.vue";
 import { getTokensTotal } from "~/composables/helpers/cashu";
 import { getTokenFromEvent } from "../../composables/helpers/pledge";
+import { getMint } from "../../composables/cashu/wallet";
 
 const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
@@ -55,16 +59,30 @@ const withdrawalModal = ref(false);
 const { ndk } = useNdk();
 const token = ref<Token>();
 const total = ref(0);
+const redeemed = ref(false);
 const payee = computed(
   () =>
     props.event.tags.find((t) => t[0] === "p" && t[1] && t[3] === "payee")?.[1],
 );
 
-onMounted(() => {
+onMounted(async () => {
   const t = getTokenFromEvent(props.event);
   if (t) {
     token.value = t;
     total.value = getTokensTotal([t]);
+
+    for (const entry of t.token) {
+      const mint = await getMint(entry.mint);
+      const spent = await mint.check({
+        proofs: entry.proofs.map((p) => ({ secret: p.secret })),
+      });
+      const anySpendable = spent.spendable.some((v) => v === true);
+      if (anySpendable) {
+        redeemed.value = false;
+        break;
+      }
+    }
+    redeemed.value = true;
   }
 });
 </script>
