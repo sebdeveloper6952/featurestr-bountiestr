@@ -1,22 +1,25 @@
 <template>
-  <div class="p-4">
-    <p class="text-xl font-bold">Solution Details</p>
+  <div class="p-4 flex flex-col items-center">
+    <div class="w-full flex justify-start">
+      <p class="text-xl font-bold">Solution Details</p>
+    </div>
 
-    <div class="w-full md:max-w-screen-md flex flex-col items-center gap-2">
+    <div
+      class="mt-8 w-full md:max-w-screen-md flex flex-col items-center gap-2"
+    >
       <feature-request-card
         v-if="featureRequestEvent"
         :event="featureRequestEvent"
       />
     </div>
 
-    <div v-if="event">
+    <div
+      v-if="event"
+      class="mt-4 w-full md:max-w-screen-md rounded-xl bg-white p-4 text-center shadow-xl relative"
+    >
       <div class="flex items-center">
         <p class="text-gray-500">Solution submitted by:</p>
-        <div
-          class="ml-2 flex h-10 w-10 items-center justify-center rounded-full bg-gray-300"
-        >
-          <user-image :user="event?.author" />
-        </div>
+        <user-image :user="event?.author" class="ml-2" />
         <div class="ml-2 flex items-center gap-2">
           <user-name :user="event?.author" />
           <p class="text-gray-500 text-sm">
@@ -25,8 +28,16 @@
         </div>
       </div>
       <div>
-        <p class="text-gray-500 text-xl">Details</p>
-        <p>{{ event?.content }}</p>
+        <p class="text-left font-bold text-xl">Details</p>
+        <p class="text-justify">{{ event?.content }}</p>
+      </div>
+      <div class="w-full flex justify-end">
+        <outlined-button
+          v-if="pledgedOnFeatureRequest"
+          @click="() => {}"
+          icon="accept"
+          >Accept Solution</outlined-button
+        >
       </div>
     </div>
   </div>
@@ -36,9 +47,6 @@
 import { useNdk } from "~/composables/nostr/ndk";
 import dayjs from "dayjs";
 import { usePostSolutionToFeature } from "~/composables/nostr/usePostSolutionToFeature";
-import textInput from "~/components/forms/text-input.vue";
-import textArea from "~/components/forms/text-area.vue";
-import outlinedButton from "~/components/buttons/outlined-button.vue";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import {
   isHexKey,
@@ -46,6 +54,9 @@ import {
   getEventIdFromDecodeResult,
 } from "~/composables/helpers/nip19";
 import featureRequestCard from "~/components/cards/feature-request-card.vue";
+import outlinedButton from "~/components/buttons/outlined-button.vue";
+import { useGetPledgesForFeature } from "~/composables/nostr/useGetPledgesForFeature";
+import { computedAsync } from "@vueuse/core";
 
 const { ndk, setSk, logout, activeUser } = useNdk();
 const r = useRoute();
@@ -72,4 +83,12 @@ const onSubmit = async () => {
   await usePostSolutionToFeature(event.value, description.value);
   navigateTo("/feature/" + id);
 };
+
+const pledgedOnFeatureRequest = computedAsync(async () => {
+  const pledges = await useGetPledgesForFeature(featureRequestEvent.value);
+
+  return Array.from(pledges).find(
+    (p) => p.author.pubkey === ndk.activeUser?.pubkey,
+  );
+}, null);
 </script>

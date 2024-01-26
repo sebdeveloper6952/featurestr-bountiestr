@@ -106,6 +106,7 @@ const onLogin = async () => {
     if (decode && decode.type === "nsec") await setSk(bytesToHex(decode.data));
   }
   showLoginModal.value = false;
+  sk.value = "";
 };
 
 const onLogout = () => {

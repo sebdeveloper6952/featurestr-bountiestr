@@ -37,7 +37,6 @@ const selectedUser = ref<NDKUser>();
 
 onMounted(() => {
   selectedUser.value = props.pubkeys[0];
-  console.warn(selectedUser.value);
 });
 
 const selectUser = (u: NDKUser) => {

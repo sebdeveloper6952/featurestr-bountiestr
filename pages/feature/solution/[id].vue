@@ -42,7 +42,6 @@ if (!hexId) throw new Error("Missing event id");
 
 onMounted(async () => {
   event.value = await ndk.fetchEvent(hexId);
-  console.warn(event.value);
 });
 
 const onSubmit = async () => {

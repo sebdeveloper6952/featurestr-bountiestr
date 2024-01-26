@@ -1,16 +1,18 @@
 <template>
-  <label for="input" class="mb-2 text-sm font-medium text-gray-900">{{
-    label
-  }}</label>
-  <input
-    id="input"
-    @input="updateInputValue"
-    :value="modelValue"
-    :type="type"
-    :placeholder="placeholder"
-    :autocomplete="autocomplete"
-    class="w-full px-2 py-2 bg-gray-50 text-black placeholder-gray-500 border border-gray-300 rounded-lg focus:outline-none"
-  />
+  <div>
+    <label for="input" class="mb-2 text-sm font-medium text-gray-900">{{
+      label
+    }}</label>
+    <input
+      id="input"
+      @input="updateInputValue"
+      :value="modelValue"
+      :type="type"
+      :placeholder="placeholder"
+      :autocomplete="autocomplete"
+      class="w-full px-2 py-2 bg-gray-50 text-black placeholder-gray-500 border border-gray-300 rounded-lg focus:outline-none"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
