@@ -12,8 +12,14 @@
       <div v-else>
         <h2 class="text-lg font-bold text-center my-4">Payout pledges?</h2>
         <div class="flex gap-2">
-          <p>Pay {{ total }} sats ({{ unlockablePledges.length }}) to</p>
-          <user-image :user="solution.author" />
+          <p>
+            Pay {{ unlockablePledgesAmount }} sats ({{
+              unlockablePledges.length
+            }}) to
+          </p>
+          <div class="w-8 h-8">
+            <user-image :user="solution.author" />
+          </div>
           <user-name :user="solution.author" />
         </div>
         <div class="flex gap-2 justify-between">
@@ -73,6 +79,19 @@ const unlockablePledges = computed(() =>
   ),
 );
 
+const unlockablePledgesAmount = computed(() => {
+  let total = 0;
+
+  unlockablePledges.value.forEach((e) => {
+    let amountTag = e.tags.find((t) => t[0] === "amount");
+    if (amountTag !== undefined) {
+      total += Number(amountTag[1]);
+    }
+  });
+
+  return total;
+});
+
 const confirm = async () => {
   if (!(ndk.signer instanceof NDKPrivateKeySigner) || !ndk.signer.privateKey)
     return;
@@ -106,6 +125,8 @@ const confirm = async () => {
 
     const lockedToken: Token = { token: lockedTokenEntries };
     console.log(getEncodedToken(lockedToken));
+
+    // TODO: post event
   }
   loading.value = false;
 };

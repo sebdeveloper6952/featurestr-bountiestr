@@ -34,7 +34,10 @@
         <p class="text-justify">{{ event?.content }}</p>
       </div>
       <div class="w-full flex justify-end">
-        <outlined-button v-if="hasPledged" @click="() => {}" icon="accept"
+        <outlined-button
+          v-if="hasPledged"
+          @click="showPayoutToSolutionModal = true"
+          icon="accept"
           >Accept Solution</outlined-button
         >
       </div>
@@ -54,6 +57,14 @@
     >
       <comment-thread :root-event="event" />
     </div>
+
+    <payout-to-solution-modal
+      :show="showPayoutToSolutionModal"
+      :feature-request="featureRequestEvent"
+      :solution="event"
+      :pledges="pledges"
+      @close="showPayoutToSolutionModal = false"
+    />
   </div>
 </template>
 
@@ -76,6 +87,7 @@ import {
   PledgeKind,
 } from "~/composables/nostr/kinds";
 import { getEventCoordinate } from "~/composables/helpers/event";
+import payoutToSolutionModal from "~/components/modals/payout-to-solution-modal.vue";
 
 const { ndk } = useNdk();
 const r = useRoute();
@@ -87,6 +99,7 @@ const hexId = isHexKey(id) ? id : getEventIdFromDecodeResult(safeDecode(id));
 if (!hexId) throw new Error("Missing event id");
 
 const pledges = ref<NDKEvent[]>([]);
+const showPayoutToSolutionModal = ref(false);
 
 let payoutSub: NDKSubscription;
 const payoutsMap = ref(new Map<string, NDKEvent>());
