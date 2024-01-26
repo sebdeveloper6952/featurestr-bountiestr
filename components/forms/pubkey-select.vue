@@ -2,16 +2,18 @@
   <div>
     <ul class="px-2 py-2 border-t border-gray-300">
       <li
-        @click="selectUser(u)"
-        :key="u.pubkey"
+        @click="selectUser(u.user)"
+        :key="u.user.pubkey"
         v-for="u in pubkeys"
-        :value="u?.pubkey"
-        :class="{ 'bg-gray-300': selectedUser?.pubkey === u?.pubkey }"
+        :value="u.user.pubkey"
+        :class="{ 'bg-gray-300': selectedUser?.pubkey === u.user.pubkey }"
         class="hover:cursor-pointer my-2 border-b border-gray-300"
       >
         <div class="flex gap-2">
-          <user-image :user="u" />
-          <user-name :user="u" />
+          <div class="h-8 w-8">
+            <user-image :user="u.user" />
+          </div>
+          <user-name :user="u.user" />
         </div>
       </li>
     </ul>
@@ -19,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { Token } from "@cashu/cashu-ts";
 import { NDKUser } from "@nostr-dev-kit/ndk";
 import userImage from "~/components/user-image.vue";
 import userName from "~/components/user-name.vue";
@@ -28,7 +31,7 @@ const emit = defineEmits(["update:modelValue"]);
 const props = defineProps({
   modelValue: { type: String, default: "" },
   pubkeys: {
-    type: Array as PropType<NDKUser[]>,
+    type: Array as PropType<{ user: NDKUser; tokens: Token[] }[]>,
     default: [],
   },
 });
@@ -36,7 +39,7 @@ const props = defineProps({
 const selectedUser = ref<NDKUser>();
 
 onMounted(() => {
-  selectedUser.value = props.pubkeys[0];
+  selectedUser.value = props.pubkeys[0].user.pubkey;
 });
 
 const selectUser = (u: NDKUser) => {

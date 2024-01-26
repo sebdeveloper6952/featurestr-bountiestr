@@ -27,7 +27,9 @@
             >
           </div>
 
-          <pledge-card v-for="pledge in sortedPledges" :event="pledge" />
+          <div class="mt-4">
+            <pledge-card v-for="pledge in sortedPledges" :event="pledge" />
+          </div>
         </div>
       </div>
 

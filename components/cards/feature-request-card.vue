@@ -8,7 +8,7 @@
       >Edit</outlined-button
     >
     <div
-      class="mx-auto flex h-16 w-16 -translate-y-10 transform items-center justify-center rounded-full bg-gray-300"
+      class="mx-auto flex h-10 w-10 -translate-y-10 transform items-center justify-center rounded-full bg-gray-300"
     >
       <user-image :user="event.author" />
     </div>

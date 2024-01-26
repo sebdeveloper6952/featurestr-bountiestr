@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center">
-    <div v-for="user in pubkeys" class="flex -space-x-2">
+    <div v-for="user in pubkeys" class="h-8 w-8 flex -space-x-2">
       <user-image :user="user" />
     </div>
     <div

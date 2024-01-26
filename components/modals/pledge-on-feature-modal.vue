@@ -45,11 +45,6 @@
         </div>
       </div>
       <div v-if="pledgeStep === 2">
-        <!-- <img
-          :src="`https://chart.googleapis.com/chart?cht=qr&chs=512x512&chl=${payRequest}`"
-          alt="img"
-          class="w-full h-auto"
-        /> -->
         <qr-code :data="payRequest" />
         <div class="flex gap-2 mt-2">
           <outlined-button @click="openInvoiceInApp">Open App</outlined-button>
