@@ -546,7 +546,8 @@ export async function filterValidTokens(tokens: Token[]) {
 }
 
 export const wallet = new P2PKCashuWallet(
-  new CashuMint("https://8333.space:3338"),
+  // new CashuMint("https://8333.space:3338"),
+  new CashuMint("https://mint.gwoq.com"),
 );
 
 //@ts-expect-error

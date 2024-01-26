@@ -2,15 +2,11 @@
   <base-modal :show="show" @close="$emit('close')" :cancellable="false">
     <div class="md:w-[6in] px-6 py-4 overflow-auto">
       <div v-if="encodedToken">
-        <img
-          :src="`https://chart.googleapis.com/chart?cht=qr&chs=512x512&chl=${encodedToken}`"
-          alt="img"
-          class="w-full h-auto"
-        />
+        <qr-code :data="encodedToken" />
         <div class="flex gap-2">
           <outline-button @click="openInWallet">Open in wallet</outline-button>
           <outline-button @click="copyToken">Copy</outline-button>
-          <outline-button @click="emit('close')" class="ml-auto"
+          <outline-button @click="emit('redeemed')" class="ml-auto"
             >Done</outline-button
           >
         </div>
@@ -34,6 +30,7 @@ import outlineButton from "~/components/buttons/outlined-button.vue";
 import { wallet } from "../../composables/cashu/wallet";
 import { getEncodedToken } from "@cashu/cashu-ts";
 import { getTokenFromEvent } from "../../composables/helpers/pledge";
+import qrCode from "~/components/qr-code.vue";
 
 const props = defineProps({
   show: {
@@ -46,9 +43,9 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "redeemed"]);
 
-const encodedToken = ref();
+const encodedToken = ref("");
 
 const confirm = async () => {
   const token = getTokenFromEvent(props.event);

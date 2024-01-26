@@ -15,15 +15,13 @@
         </p>
         <p class="text-gray-500">
           {{ total }} sats
-          <span v-if="redeemed" class="font-bold" @click="redeem = true"
-            >Redeemed</span
-          >
+          <span v-if="redeemed" class="font-bold">Redeemed</span>
         </p>
       </div>
       <div class="ml-auto flex gap-2">
         <outlined-button
-          @click="withdrawalModal = true"
-          v-if="payee === ndk.activeUser?.pubkey"
+          @click="redeem = true"
+          v-if="payee === ndk.activeUser?.pubkey && redeemed === false"
           >Redeem</outlined-button
         >
         <icon-button @click="debug = true" icon="code" />
@@ -34,10 +32,14 @@
     </p>
 
     <redeem-payout-modal
+      :show="redeem"
       :event="event"
-      @close="
-        redeem = false;
-        redeemed = true;
+      @close="redeem = false"
+      @redeemed="
+        () => {
+          redeemed = true;
+          redeem = false;
+        }
       "
     />
     <debug-modal :event="event" :show="debug" @close="debug = false" />

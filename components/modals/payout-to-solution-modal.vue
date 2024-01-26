@@ -137,6 +137,7 @@ const confirm = async () => {
       content.value,
       lockedToken,
     );
+    emit("close");
   }
   loading.value = false;
 };

@@ -63,7 +63,7 @@
       :feature-request="featureRequestEvent"
       :solution="event"
       :pledges="pledges"
-      @close="showPayoutToSolutionModal = false"
+      @close="onPayoutModalClose"
     />
   </div>
 </template>
@@ -160,4 +160,8 @@ onMounted(async () => {
 onUnmounted(() => {
   if (payoutSub) payoutSub.stop();
 });
+
+const onPayoutModalClose = () => {
+  showPayoutToSolutionModal.value = false;
+};
 </script>
