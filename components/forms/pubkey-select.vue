@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { Token } from "@cashu/cashu-ts";
+import { type Token } from "@cashu/cashu-ts";
 import { NDKUser } from "@nostr-dev-kit/ndk";
 import userImage from "~/components/user-image.vue";
 import userName from "~/components/user-name.vue";
@@ -39,7 +39,7 @@ const props = defineProps({
 const selectedUser = ref<NDKUser>();
 
 onMounted(() => {
-  selectedUser.value = props.pubkeys[0].user.pubkey;
+  selectedUser.value = props.pubkeys[0].user;
 });
 
 const selectUser = (u: NDKUser) => {
