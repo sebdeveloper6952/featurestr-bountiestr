@@ -51,6 +51,17 @@
           <outlined-button @click="payWithWebLN">WebLN</outlined-button>
         </div>
       </div>
+      <div
+        v-if="pledgeStep === 3"
+        class="w-full flex flex-col items-center justify-center"
+      >
+        <div
+          class="h-24 w-24 p-8 flex justify-center items-center bg-green-300 rounded-full"
+        >
+          <nuxt-icon filled name="accept" class="text-6xl text-green-500" />
+        </div>
+        <p class="text-green-500 font-bold">Success</p>
+      </div>
       <div class="flex w-full justify-between">
         <outlined-button
           v-if="pledgeStep !== 0 && pledgeStep !== pledgeSteps.length - 1"
