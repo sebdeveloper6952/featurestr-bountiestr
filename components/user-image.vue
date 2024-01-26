@@ -16,7 +16,12 @@ const props = defineProps({
 });
 
 const profile = ref<NDKUserProfile>();
-
+watch(
+  () => props.user,
+  async () => {
+    profile.value = (await props.user.fetchProfile()) ?? undefined;
+  },
+);
 onMounted(async () => {
   profile.value = (await props.user.fetchProfile()) ?? undefined;
 });
