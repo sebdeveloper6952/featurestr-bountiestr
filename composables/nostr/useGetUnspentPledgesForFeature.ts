@@ -3,7 +3,7 @@ import { type Token } from "@cashu/cashu-ts";
 import { useNdk } from "./ndk";
 import { PledgeKind } from "./kinds";
 import { getEventCoordinate } from "../helpers/event";
-import { getTokenFromPeldge } from "../helpers/pledge";
+import { getTokenFromPledge } from "../helpers/pledge";
 import { filterValidTokens } from "../cashu/wallet";
 
 export async function useGetUnspentPledgesForFeature(feature: NDKEvent) {
@@ -15,7 +15,7 @@ export async function useGetUnspentPledgesForFeature(feature: NDKEvent) {
 
   const pledgesByToken = new Map<Token, NDKEvent>();
   for (const pledge of pledges) {
-    const token = getTokenFromPeldge(pledge);
+    const token = getTokenFromPledge(pledge);
     if (!token) continue;
     pledgesByToken.set(token, pledge);
   }

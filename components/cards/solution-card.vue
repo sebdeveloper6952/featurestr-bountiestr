@@ -34,8 +34,8 @@ import solutionModal from "../modals/solution-modal.vue";
 import iconButton from "~/components/buttons/icon-button.vue";
 import userImage from "~/components/user-image.vue";
 import userName from "~/components/user-name.vue";
-import { getTokenFromPeldge } from "~/composables/helpers/pledge";
 import { getTokensTotal } from "~/composables/helpers/cashu";
+import { getTokenFromPledge } from "../../composables/helpers/pledge";
 
 const props = defineProps({
   event: { type: Object as PropType<NDKEvent>, default: null },
@@ -49,7 +49,7 @@ const token = ref<Token>();
 const total = ref(0);
 
 onMounted(() => {
-  const t = getTokenFromPeldge(props.event);
+  const t = getTokenFromPledge(props.event);
   if (t) {
     token.value = t;
     total.value = getTokensTotal([t]);

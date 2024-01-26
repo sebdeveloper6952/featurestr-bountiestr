@@ -9,6 +9,10 @@
         />
       </div>
 
+      <h2 v-if="totalPledged" class="text-lg font-bold mb-2 mt-4 text-center">
+        {{ totalPledged }} sats pledged
+      </h2>
+
       <!-- pledges -->
       <div class="mt-4">
         <div class="p-4 w-full justify-between bg-white rounded shadow-xl">
@@ -87,6 +91,8 @@ import {
 import pledgeCard from "~/components/cards/pledge-card.vue";
 import solutionCard from "~/components/cards/solution-card.vue";
 import { PledgeKind } from "~/composables/nostr/kinds";
+import { getUsersFromPledges } from "../../composables/helpers/pledge";
+import { getTokensTotal } from "../../composables/helpers/cashu";
 
 const r = useRoute();
 const { ndk } = useNdk();
@@ -98,6 +104,12 @@ const event = ref<NDKEvent>();
 const pledges = ref(new Map<string, NDKEvent>());
 const sortedPledges = computed(() =>
   sortEventsByDate(pledges.value.values() as Iterable<NDKEvent>),
+);
+const users = computed(() =>
+  getUsersFromPledges(pledges.value.values() as Iterable<NDKEvent>),
+);
+const totalPledged = computed(() =>
+  getTokensTotal(users.value.map((u) => u.tokens).flat()),
 );
 const solutions = ref<Set<NDKEvent>>();
 const sortedSolutions = computed(() => {

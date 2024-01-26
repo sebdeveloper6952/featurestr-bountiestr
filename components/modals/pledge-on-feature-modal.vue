@@ -93,6 +93,7 @@ import { useCreatePledgeOnFeature } from "~/composables/nostr/useCreatePledgeOnF
 import pubkeySelect from "~/components/forms/pubkey-select.vue";
 import { useGetPledgesForFeature } from "~/composables/nostr/useGetPledgesForFeature";
 import qrCode from "~/components/qr-code.vue";
+import { getUsersFromPledges } from "../../composables/helpers/pledge";
 
 const props = defineProps({
   show: {
@@ -124,7 +125,7 @@ const lockToYourself = computed(
 );
 const invoiceHash = ref("");
 const payRequest = ref("");
-const pkOptions = ref<NDKUser[]>([]);
+const pkOptions = ref<{ user: NDKUser; tokens: Token[] }[]>([]);
 
 onMounted(async () => {
   const e = await ndk.fetchEvent(hexId);
@@ -134,7 +135,7 @@ onMounted(async () => {
 
   event.value = e;
   const pledges = await useGetPledgesForFeature(event.value);
-  pkOptions.value = Array.from(pledges).map((p) => p.author);
+  pkOptions.value = getUsersFromPledges(pledges);
 });
 
 const lockToSelf = () => {

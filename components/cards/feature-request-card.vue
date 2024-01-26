@@ -30,7 +30,7 @@
       >
     </div>
     <div v-if="showPledgeUsers" class="flex gap-2 items-center">
-      <pubkey-facepile :pubkeys="pledgeAuthors" summarized />
+      <pubkey-facepile :pubkeys="pledges.map((p) => p.user)" summarized />
       <span v-if="total">{{ total }} sats</span>
     </div>
   </div>
@@ -47,10 +47,7 @@ import { useNdk } from "~/composables/nostr/ndk";
 import { useFeatureEvent } from "~/composables/nostr/useFeatureEvent";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
 import { sortEventsByDate } from "~/composables/helpers/event";
-import {
-  getTokenFromPeldge as getTokenFromPledge,
-  getUsersFromPledges,
-} from "~/composables/helpers/pledge";
+import { getUsersFromPledges } from "~/composables/helpers/pledge";
 import { useGetUnspentPledgesForFeature } from "~/composables/nostr/useGetUnspentPledgesForFeature";
 import pubkeyFacepile from "~/components/pubkey-facepile.vue";
 import userImage from "~/components/user-image.vue";
@@ -68,9 +65,7 @@ const debug = ref(false);
 const { ndk } = useNdk();
 const { title, hashtags, description } = useFeatureEvent(props.event);
 
-const pledgeEvents = ref<NDKEvent[]>([]);
 const total = ref(0);
-const pledgeAuthors = ref<NDKUser[]>([]);
 
 const nevent = nip19.neventEncode({
   id: props.event.id,
@@ -78,18 +73,15 @@ const nevent = nip19.neventEncode({
   kind: props.event.kind,
   relays: [props.event.relay?.url!],
 });
-const pledges = ref<NDKEvent[]>([]);
+const pledges = ref<{ user: NDKUser; tokens: Token[] }[]>([]);
 
 onMounted(async () => {
   const pledgeEvents = sortEventsByDate(
     await useGetUnspentPledgesForFeature(props.event),
   );
 
-  pledges.value = pledgeEvents;
-  pledgeAuthors.value = getUsersFromPledges(pledgeEvents);
-  const tokens = pledgeEvents
-    .map((e) => getTokenFromPledge(e))
-    .filter(Boolean) as Token[];
+  pledges.value = getUsersFromPledges(pledgeEvents);
+  const tokens = pledges.value.map((p) => p.tokens).flat();
   total.value = getTokensTotal(tokens);
 });
 </script>
