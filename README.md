@@ -27,7 +27,7 @@ anoter test user: 814fff2674370207afe2f581a78f0a4fd9949eb2239317a45217fbba2297e6
   - comment on feature request
     - `kind`: 73003
     - `content`: message
-    - `a:root` tag referncing k:37300
+    - `a:root` tag referencing k:37300
     - `p` tag of `thing.pubkey`
     - `e:root` and `e:reply` for threading, `NIP-10`
   - payout on solution

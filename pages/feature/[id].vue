@@ -56,14 +56,9 @@
           </div>
         </div>
       </div>
-      <div class="mt-4 p-4 w-full rounded-xl bg-white text-center shadow-xl">
-        <h4 class="text-left font-bold">Comments</h4>
-        <div class="w-full flex justify-center">
-          <div class="flex">
-            <p class="text-gray-500">No comments yet</p>
-          </div>
-        </div>
-      </div>
+
+      <!-- comments -->
+      <comment-thread v-if="event" :root-event="event" />
 
       <pledge-on-feature-modal
         :show="showPledgeModal"
@@ -84,6 +79,8 @@ import {
 } from "~/composables/helpers/nip19";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
 import pledgeOnFeatureModal from "~/components/modals/pledge-on-feature-modal.vue";
+import newCommentForm from "~/components/comments/new-comment-form.vue";
+import commentThread from "../../components/comments/comment-thread.vue";
 import { useFilterUnspentPledges } from "~/composables/nostr/useFilterUnspentPledges";
 import { useGetSolutionsForFeature } from "~/composables/nostr/useGetSolutionsForFeature";
 import {

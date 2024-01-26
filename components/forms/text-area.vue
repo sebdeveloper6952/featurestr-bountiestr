@@ -10,6 +10,7 @@
       rows="4"
       class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:outline-none"
       :placeholder="placeholder"
+      :required="required"
     ></textarea>
   </div>
 </template>
@@ -24,6 +25,10 @@ defineProps({
   placeholder: {
     type: String,
     default: "",
+  },
+  required: {
+    type: Boolean,
+    default: false,
   },
 });
 
