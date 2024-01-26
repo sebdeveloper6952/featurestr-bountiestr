@@ -21,7 +21,6 @@
 <script setup lang="ts">
 import { useNdk } from "~/composables/nostr/ndk";
 import { usePostSolutionToFeature } from "~/composables/nostr/usePostSolutionToFeature";
-import textInput from "~/components/forms/text-input.vue";
 import textArea from "~/components/forms/text-area.vue";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
@@ -31,7 +30,7 @@ import {
   getEventIdFromDecodeResult,
 } from "~/composables/helpers/nip19";
 
-const { ndk, setSk, logout, activeUser } = useNdk();
+const { ndk } = useNdk();
 const r = useRoute();
 
 const id = r.params["id"] as string;
@@ -41,11 +40,11 @@ const hexId = isHexKey(id) ? id : getEventIdFromDecodeResult(safeDecode(id));
 if (!hexId) throw new Error("Missing event id");
 
 onMounted(async () => {
-  event.value = await ndk.fetchEvent(hexId);
+  event.value = (await ndk.fetchEvent(hexId)) ?? undefined;
 });
 
 const onSubmit = async () => {
-  if (event === undefined) throw new Error("undefined feature event");
+  if (event.value === undefined) throw new Error("undefined feature event");
   await usePostSolutionToFeature(event.value, description.value);
   navigateTo("/feature/" + id);
 };

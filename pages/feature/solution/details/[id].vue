@@ -34,10 +34,7 @@
         <p class="text-justify">{{ event?.content }}</p>
       </div>
       <div class="w-full flex justify-end">
-        <outlined-button
-          v-if="pledgedOnFeatureRequest"
-          @click="() => {}"
-          icon="accept"
+        <outlined-button v-if="hasPledged" @click="() => {}" icon="accept"
           >Accept Solution</outlined-button
         >
       </div>
@@ -48,7 +45,6 @@
 <script setup lang="ts">
 import { useNdk } from "~/composables/nostr/ndk";
 import dayjs from "dayjs";
-import { usePostSolutionToFeature } from "~/composables/nostr/usePostSolutionToFeature";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import {
   isHexKey,
@@ -57,40 +53,44 @@ import {
 } from "~/composables/helpers/nip19";
 import featureRequestCard from "~/components/cards/feature-request-card.vue";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
-import { useGetPledgesForFeature } from "~/composables/nostr/useGetPledgesForFeature";
-import { computedAsync } from "@vueuse/core";
+import {
+  FeatureRequestKind,
+  PledgeKind,
+} from "../../../../composables/nostr/kinds";
 
-const { ndk, setSk, logout, activeUser } = useNdk();
+const { ndk } = useNdk();
 const r = useRoute();
 
 const id = r.params["id"] as string;
 const event = ref<NDKEvent>();
 const featureRequestEvent = ref<NDKEvent>();
-const description = ref("");
 const hexId = isHexKey(id) ? id : getEventIdFromDecodeResult(safeDecode(id));
 if (!hexId) throw new Error("Missing event id");
 
+const pledges = ref<NDKEvent[]>([]);
+
 onMounted(async () => {
-  event.value = await ndk.fetchEvent(hexId);
-  const featureRequestEventId = event.value?.tags.find(
-    (t) => t[0] === "e",
+  event.value = (await ndk.fetchEvent(hexId)) ?? undefined;
+  const featureRequestEventCord = event.value?.tags.find(
+    (t) => t[0] === "a" && t[1],
   )?.[1];
-  if (!featureRequestEvent)
+  if (!featureRequestEventCord)
     throw new Error("solution event is missing feature request event id");
-  featureRequestEvent.value = await ndk.fetchEvent(featureRequestEventId);
+  featureRequestEvent.value =
+    (await ndk.fetchEvent({
+      kinds: [FeatureRequestKind],
+      "#a": [featureRequestEventCord],
+    })) ?? undefined;
+
+  pledges.value = Array.from(
+    await ndk.fetchEvents({
+      kinds: [PledgeKind],
+      "#a": [featureRequestEventCord],
+    }),
+  );
 });
 
-const onSubmit = async () => {
-  if (event === undefined) throw new Error("undefined feature event");
-  await usePostSolutionToFeature(event.value, description.value);
-  navigateTo("/feature/" + id);
-};
-
-const pledgedOnFeatureRequest = computedAsync(async () => {
-  const pledges = await useGetPledgesForFeature(featureRequestEvent.value);
-
-  return Array.from(pledges).find(
-    (p) => p.author.pubkey === ndk.activeUser?.pubkey,
-  );
-}, null);
+const hasPledged = computed(() =>
+  pledges.value.some((p) => p.author.pubkey === ndk.activeUser?.pubkey),
+);
 </script>
