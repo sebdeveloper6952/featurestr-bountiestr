@@ -2,7 +2,12 @@
   <div class="w-full p-4 flex flex-col justify-center">
     <p class="text-xl font-bold">Profile</p>
     <div class="w-full flex flex-col items-center gap-2">
-      <feature-request-card v-for="event in events" :event="event" edit />
+      <feature-request-card
+        v-for="event in events"
+        :key="event.id"
+        :event="event"
+        edit
+      />
     </div>
   </div>
 </template>

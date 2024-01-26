@@ -28,7 +28,11 @@
           </div>
 
           <div class="mt-4">
-            <pledge-card v-for="pledge in sortedPledges" :event="pledge" />
+            <pledge-card
+              v-for="pledge in sortedPledges"
+              :key="pledge.id"
+              :event="pledge"
+            />
           </div>
         </div>
       </div>
@@ -49,8 +53,8 @@
           </div>
           <div class="mt-4 flex flex-col">
             <solution-card
+              v-for="solution in sortedSolutions"
               :key="solution.id"
-              v-for="solution in solutions"
               :event="solution"
             />
           </div>
@@ -79,7 +83,6 @@ import {
 } from "~/composables/helpers/nip19";
 import outlinedButton from "~/components/buttons/outlined-button.vue";
 import pledgeOnFeatureModal from "~/components/modals/pledge-on-feature-modal.vue";
-import newCommentForm from "~/components/comments/new-comment-form.vue";
 import commentThread from "../../components/comments/comment-thread.vue";
 import { useFilterUnspentPledges } from "~/composables/nostr/useFilterUnspentPledges";
 import { useGetSolutionsForFeature } from "~/composables/nostr/useGetSolutionsForFeature";
@@ -111,9 +114,9 @@ const totalPledged = computed(() =>
   getTokensTotal(users.value.map((u) => u.tokens).flat()),
 );
 const solutions = ref<Set<NDKEvent>>();
-const sortedSolutions = computed(() => {
-  sortEventsByDate(solutions.value?.values() as Iterable<NDKEvent>);
-});
+const sortedSolutions = computed(() =>
+  sortEventsByDate(solutions.value?.values() as Iterable<NDKEvent>),
+);
 
 const showPledgeModal = ref(false);
 

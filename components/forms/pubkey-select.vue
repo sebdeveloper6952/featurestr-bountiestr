@@ -3,8 +3,8 @@
     <ul class="px-2 py-2 border-t border-gray-300">
       <li
         @click="selectUser(u.user)"
-        :key="u.user.pubkey"
         v-for="u in pubkeys"
+        :key="u.user.pubkey"
         :value="u.user.pubkey"
         :class="{ 'bg-gray-300': selectedUser?.pubkey === u.user.pubkey }"
         class="hover:cursor-pointer my-2 border-b border-gray-300"

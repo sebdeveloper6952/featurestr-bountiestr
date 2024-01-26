@@ -23,6 +23,7 @@
       </div>
       <comment
         v-for="comment in rootComments"
+        :key="comment.id"
         :event="comment"
         :parent="rootEvent"
         :root="rootEvent"

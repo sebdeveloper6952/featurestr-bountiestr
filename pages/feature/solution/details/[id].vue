@@ -48,7 +48,7 @@
       class="mt-4 w-full md:max-w-screen-md rounded-xl bg-white p-4 shadow-xl"
     >
       <h4 class="text-left font-bold">Payouts</h4>
-      <payout-card v-for="payout in payouts" :event="payout" />
+      <payout-card v-for="payout in payouts" :key="payout.id" :event="payout" />
     </div>
 
     <div
@@ -71,11 +71,7 @@
 <script setup lang="ts">
 import { useNdk } from "~/composables/nostr/ndk";
 import dayjs from "dayjs";
-import {
-  NDKEvent,
-  NDKSubscription,
-  NDKSubscriptionCacheUsage,
-} from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKSubscription } from "@nostr-dev-kit/ndk";
 import {
   isHexKey,
   safeDecode,
@@ -93,6 +89,7 @@ import {
 import { getEventCoordinate } from "~/composables/helpers/event";
 import payoutToSolutionModal from "~/components/modals/payout-to-solution-modal.vue";
 import { useFilterUnspentPledges } from "~/composables/nostr/useFilterUnspentPledges";
+import { getPledgeTrustee } from "../../../../composables/helpers/pledge";
 
 const { ndk } = useNdk();
 const r = useRoute();
@@ -113,7 +110,9 @@ const payouts = computed(
 );
 
 const hasPledged = computed(() =>
-  pledges.value.some((p) => p.author.pubkey === ndk.activeUser?.pubkey),
+  pledges.value.some(
+    (p) => getPledgeTrustee(p as NDKEvent) === ndk.activeUser?.pubkey,
+  ),
 );
 
 onMounted(async () => {
@@ -149,12 +148,13 @@ onMounted(async () => {
   });
   payoutSub.start();
 
-  pledges.value = await useFilterUnspentPledges(
+  pledges.value = Array.from(
     await ndk.fetchEvents({
       kinds: [PledgeKind],
       "#a": [featureRequestEventCord],
     }),
   );
+  pledges.value = await useFilterUnspentPledges(pledges.value as NDKEvent[]);
 });
 
 onUnmounted(() => {

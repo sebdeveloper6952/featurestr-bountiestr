@@ -26,6 +26,7 @@
     <div class="flex flex-col gap-2 pl-4">
       <comment
         v-for="child in replies"
+        :key="child.id"
         :event="child"
         :parent="event"
         :root="root"

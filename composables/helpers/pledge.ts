@@ -20,3 +20,10 @@ export function getUsersFromPledges(pledges: Iterable<NDKEvent>) {
   }
   return Array.from(users.values());
 }
+
+export function getPledgeTrustee(pledge: NDKEvent) {
+  return (
+    pledge.tags.find((t) => t[0] === "p" && t[1] && t[3] === "trustee")?.[1] ||
+    pledge.author.pubkey
+  );
+}
