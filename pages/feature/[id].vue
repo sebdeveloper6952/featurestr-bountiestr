@@ -96,6 +96,7 @@ import solutionCard from "~/components/cards/solution-card.vue";
 import { PledgeKind } from "~/composables/nostr/kinds";
 import { getUsersFromPledges } from "../../composables/helpers/pledge";
 import { getTokensTotal } from "../../composables/helpers/cashu";
+import { asyncComputed } from "@vueuse/core";
 
 const r = useRoute();
 const { ndk } = useNdk();
@@ -105,9 +106,13 @@ const hexId = isHexKey(id) ? id : getEventIdFromDecodeResult(safeDecode(id));
 if (!hexId) throw new Error("Missing event id");
 const event = ref<NDKEvent>();
 const pledges = ref(new Map<string, NDKEvent>());
-const unspentPledges = ref<string[]>([]);
 const sortedPledges = computed(() =>
   sortEventsByDate(pledges.value.values() as Iterable<NDKEvent>),
+);
+const unspentPledges = asyncComputed(async () =>
+  (
+    await useFilterUnspentPledges(pledges.value.values() as Iterable<NDKEvent>)
+  ).map((p) => p.id),
 );
 const users = computed(() =>
   getUsersFromPledges(pledges.value.values() as Iterable<NDKEvent>),
@@ -132,13 +137,6 @@ onMounted(async () => {
     );
     pledgesSub.on("event", (event): void => {
       pledges.value.set(event.id, event);
-    });
-    pledgesSub.on("eose", async () => {
-      unspentPledges.value = (
-        await useFilterUnspentPledges(
-          pledges.value.values() as Iterable<NDKEvent>,
-        )
-      ).map((p) => p.id);
     });
     pledgesSub.start();
 

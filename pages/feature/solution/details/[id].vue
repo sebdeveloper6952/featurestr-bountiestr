@@ -86,7 +86,10 @@ import {
   PayoutKind,
   PledgeKind,
 } from "~/composables/nostr/kinds";
-import { getEventCoordinate } from "~/composables/helpers/event";
+import {
+  getEventCoordinate,
+  sortEventsByDate,
+} from "~/composables/helpers/event";
 import payoutToSolutionModal from "~/components/modals/payout-to-solution-modal.vue";
 import { useFilterUnspentPledges } from "~/composables/nostr/useFilterUnspentPledges";
 import { getPledgeTrustee } from "../../../../composables/helpers/pledge";
@@ -105,8 +108,8 @@ const showPayoutToSolutionModal = ref(false);
 
 let payoutSub: NDKSubscription;
 const payoutsMap = ref(new Map<string, NDKEvent>());
-const payouts = computed(
-  () => Array.from(payoutsMap.value.values()) as NDKEvent[],
+const payouts = computed(() =>
+  sortEventsByDate(Array.from(payoutsMap.value.values()) as NDKEvent[]),
 );
 
 const hasPledged = computed(() =>

@@ -127,6 +127,7 @@ const confirm = async () => {
       wallet.p2pkReceiveSecretKey = ndk.signer.privateKey;
       wallet.p2pkSendLockPubkey = "02" + props.solution.author.pubkey;
       const { token: lockedToken } = await wallet.receive(token);
+      wallet.p2pkSendLockPubkey = null;
       lockedTokenEntries.push(...lockedToken.token);
     }
 
